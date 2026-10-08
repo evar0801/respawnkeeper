@@ -211,7 +211,7 @@
   #     must equal stop.kind) does not apply - there is no shared pipe to share
   #   - it is a FILE DROP: one command per .txt in <ServerDir>\respawnkeeper\
   #     console-in\, which is the exact path the plugin resolves for itself
-  #     (measured: "inbox=C:\...\server\respawnkeeper\console-in" in its up line)
+  #     (measured: "inbox=C:\...\valheim\respawnkeeper\console-in" in its up line)
   #   - it only works if the plugin is actually loaded, which is why readyLine
   #     exists: the plugin announces itself once per boot, and that line is the
   #     only honest proof the channel is there. A declaration alone would light

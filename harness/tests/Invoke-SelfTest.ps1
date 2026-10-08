@@ -2014,6 +2014,8 @@ Group '17b. no dead rules (the log-scan ruler and its table)'
 #
 # The fixture is one VERBATIM line per rule, copied out of the six real Everheim
 # logs. Verbatim on purpose: a paraphrase would test the test.
+# (In this public copy the server's own folder in these lines is a stand-in,
+# C:\Servers\valheim. The lines are otherwise as the logs had them.)
 $vhLevel = [string](Import-PowerShellDataFile (Join-Path $HarnessDir 'games\valheim.psd1')).evidence.level
 $vhScan  = @(Import-PowerShellDataFile (Join-Path $HarnessDir 'rules\logscan-valheim.psd1')).rules
 $vhFix = @(
