@@ -1,0 +1,24 @@
+# この PC のサーバーの場所（servers.example.json を写して作る。追跡しない）
+servers.json
+
+# 機械が書くキャッシュと、書き込みの途中で落ちたときに残る兄弟ファイル
+harness/.cache/
+harness/ui/stage/.cache/
+*.json.tmp-*
+*.lock.tmp-*
+*.json.prev-*
+*.lock.prev-*
+harness/ui/stage/__pycache__/
+
+# 編集前の控え
+*.bak
+**/_*backup*/
+
+# ビルド生成物（harness\launcher\RespawnKeeper.cs から作る）
+*.exe
+
+# 環境変数の実値
+.env
+
+# 監査の報告書は公開しない
+SANITIZATION_REPORT.md

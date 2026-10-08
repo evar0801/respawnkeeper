@@ -1,0 +1,272 @@
+{
+  "_comment": [
+    "The stage the console window and the panel both draw. THIS FILE IS THE ART CONTRACT:",
+    "adding a background, a character or an animation means editing this file and dropping",
+    "a file next to it - never editing a .ps1. rk-stage.ps1 validates every frame name and",
+    "cell number against the art that is actually present, at load, and names what is wrong.",
+    "",
+    "size is in LOGICAL pixels; scale is an integer nearest-neighbour zoom applied to",
+    "everything. 560x376 at 2x = 1120x752 on screen.",
+    "",
+    "source .rkspr = text pixel map, recolourable: '*' becomes the current state colour",
+    "                (accent while the servers are up, magenta when one is down), '+' the",
+    "                same colour dimmed.",
+    "source .png   = sprite sheet; add \"frame\": [w, h]. A PNG carries its own colours and",
+    "                is NOT recoloured, so a state that must look different needs its own",
+    "                frames.",
+    "",
+    "hold is in TICKS (the window ticks every 400ms), one entry per frame.",
+    "byState maps server state -> animation. States: run / care / halt / sleep.",
+    "A layer with no byState plays 'idle' forever, which is what a background is.",
+    "",
+    "HOW THE ART GETS HERE. Do not re-run the importer by hand - run the script that",
+    "remembers every edit:",
+    "",
+    "    powershell -STA -File harness\\ui\\stage\\build-belka.ps1",
+    "",
+    "It imports the three generated pictures and then applies the DECLARED edits with",
+    "rk-derive.ps1 (which palette entry is the status light, which rectangle holds an eye).",
+    "Those edits do not survive a re-import, so they live in that script rather than in",
+    "someone's memory. Both tools print how many pixels they changed; that number is the",
+    "check, not the picture.",
+    "",
+    "2026-08-30: the stage was 80x50 at 3x, sized for the narrow column the console used",
+    "to give it. The window then led with the stage, so it became 128x128 at 4x.",
+    "",
+    "2026-09-09: 560x376 at 2x, and the room, the character and the close-up became three",
+    "layers instead of one baked picture [R-062]. Eva's call: the console window grew to",
+    "1880x1010 so the stage could hold a whole room with a person in it at a pixel count",
+    "where the detail survives.",
+    "",
+    "TWO CUTS, NOT ONE ZOOM. A face as fine as the reference needs the eye about 22px",
+    "across, which is a 140px head - that does not fit a seven-head figure in 376 rows.",
+    "So the close-up is a SEPARATE drawing on the same canvas, laid over this one as a",
+    "full-canvas layer whose off state is a frame full of nothing. Enlarging pixel art",
+    "cannot add detail to it; only another drawing can.",
+    "",
+    "WHAT ACTUALLY MOVES, AND WHY IT IS THAT AND NOT A BLINK. Her eyes are the readout,",
+    "so the two frames of every loop are the iris at full state colour and the iris",
+    "dimmed - she pulses, and the colour of the pulse is the answer to 'is it up'. A",
+    "blink was tried first and thrown away: filling the eye rectangle with skin reads as",
+    "a pasted patch, because a closed eye is a LINE that has to be drawn and no palette",
+    "substitution can draw one. That line is hand work, and it belongs to the close-up",
+    "where the eye is 40px wide - not here.",
+    "",
+    "STILL MISSING: one pose. care / halt / sleep all play the run loop, because only one",
+    "drawing of her exists. They are listed separately anyway so that adding a second",
+    "drawing is a change to this file and nothing else."
+  ],
+  "schema": "respawnkeeper/stage/1",
+  "size": [
+    560,
+    376
+  ],
+  "scale": 2,
+  "layers": [
+    {
+      "_note": "the room. 'lit.0' is the imported frame with the screen glow turned into * and +, so 34,629 pixels of it are the status light. 'idle.0' next to it in the file is the raw import, kept so a re-derive has something to derive from.",
+      "id": "bg-far",
+      "source": "art/bg-far.rkspr",
+      "at": [
+        0,
+        0
+      ],
+      "tint": "state",
+      "anim": {
+        "idle": {
+          "frames": [
+            "lit.0"
+          ],
+          "hold": [
+            4
+          ]
+        }
+      }
+    },
+    {
+      "_note": "her. 249x320 out of 376 rows. 'at' is the floor, not her head - anchor bottom-center means the number below is where her feet land.",
+      "id": "belka",
+      "source": "art/belka.rkspr",
+      "at": [
+        286,
+        374
+      ],
+      "anchor": "bottom-center",
+      "tint": "state",
+      "byState": {
+        "run": "run",
+        "care": "care",
+        "halt": "halt",
+        "sleep": "sleep"
+      },
+      "anim": {
+        "run": {
+          "frames": [
+            "run.0",
+            "run.1"
+          ],
+          "hold": [
+            28,
+            4
+          ]
+        },
+        "care": {
+          "frames": [
+            "run.0",
+            "run.1"
+          ],
+          "hold": [
+            12,
+            12
+          ]
+        },
+        "halt": {
+          "frames": [
+            "run.0",
+            "run.1"
+          ],
+          "hold": [
+            4,
+            4
+          ]
+        },
+        "sleep": {
+          "frames": [
+            "run.1"
+          ],
+          "hold": [
+            32
+          ]
+        }
+      }
+    },
+    {
+      "_note": "HER EYES, AND ONLY HER EYES. This is the same strip of picture the layer below already draws, lifted out and given \"scale\": 1 while the body stays at the stage's 2 - the same 29x20 of stage, carrying 58x40 dots instead of 29x20. That is the entire reason it exists: an iris is thirteen cells at the body's resolution and nothing can happen inside thirteen cells. 'at' is in STAGE units like every other layer, so this sits exactly over the face no matter what either zoom is. tint is none because these frames carry their own colours - the state is told by what the gradient is doing, not by repainting it. [R-069]",
+      "id": "belka-eye",
+      "source": "art/belka-eye.rkspr",
+      "at": [
+        256,
+        94
+      ],
+      "scale": 1,
+      "tint": "none",
+      "anim": {
+        "idle": {
+          "frames": [
+            "run.0",
+            "run.1",
+            "run.2",
+            "run.3",
+            "run.4",
+            "run.5",
+            "run.6",
+            "run.7",
+            "run.8",
+            "run.9",
+            "run.10",
+            "run.11"
+          ]
+        },
+        "run": {
+          "frames": [
+            "run.0",
+            "run.1",
+            "run.2",
+            "run.3",
+            "run.4",
+            "run.5",
+            "run.6",
+            "run.7",
+            "run.8",
+            "run.9",
+            "run.10",
+            "run.11"
+          ]
+        },
+        "care": {
+          "frames": [
+            "care.0",
+            "care.1",
+            "care.2",
+            "care.3",
+            "care.4",
+            "care.5",
+            "care.6",
+            "care.7",
+            "care.8",
+            "care.9",
+            "care.10",
+            "care.11"
+          ]
+        },
+        "halt": {
+          "frames": [
+            "halt.0",
+            "halt.1",
+            "halt.2",
+            "halt.3",
+            "halt.4",
+            "halt.5",
+            "halt.6",
+            "halt.7",
+            "halt.8",
+            "halt.9",
+            "halt.10",
+            "halt.11"
+          ]
+        },
+        "sleep": {
+          "frames": [
+            "sleep.0"
+          ],
+          "hold": [
+            12
+          ]
+        }
+      },
+      "byState": {
+        "run": "run",
+        "care": "care",
+        "halt": "halt",
+        "sleep": "sleep"
+      },
+      "atPx": [
+        -1,
+        0
+      ]
+    },
+    {
+      "_note": "the close-up cut. Covers the whole canvas when it plays, so nothing under it needs hiding. 'near' is a pseudo-state, the same trick the tablet's 'hand' already uses - no code knows about it, the state name is simply passed in.",
+      "id": "belka-near",
+      "source": "art/belka-near.rkspr",
+      "at": [
+        0,
+        0
+      ],
+      "tint": "state",
+      "byState": {
+        "near": "near"
+      },
+      "anim": {
+        "idle": {
+          "frames": [
+            "idle.0"
+          ],
+          "hold": [
+            4
+          ]
+        },
+        "near": {
+          "frames": [
+            "near.0",
+            "near.1"
+          ],
+          "hold": [
+            20,
+            8
+          ]
+        }
+      }
+    }
+  ]
+}

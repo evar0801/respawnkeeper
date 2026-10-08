@@ -1,0 +1,15 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-08-01_21.06.00-fml.txt
+# covers: fml-invalid-mod-file
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// There are four lights!
+
+Time: 2026-08-01 21:06:00
+Description: Mod loading failures have occurred; consult the issue messages for more details
+
+net.neoforged.neoforge.logging.CrashReportExtender$ModLoadingCrashException: Mod loading has failed
+
+
+	Failure message: File C:\Servers\pokemoncraft\mods\Structory_Towers_26.2_v1.0.17.jar is not a valid mod file

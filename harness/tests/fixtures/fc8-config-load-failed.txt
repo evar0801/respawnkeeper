@@ -1,0 +1,14 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-06-25_17.27.57-server.txt
+# covers: config-load-failed
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// Surprise! Haha. Well, this is awkward.
+
+Time: 2026-06-25 17:27:57
+Description: Exception in server tick loop
+
+net.minecraftforge.fml.config.ConfigFileTypeHandler$ConfigLoadingException: Failed loading config file irons_spellbooks-server.toml of type SERVER for modid irons_spellbooks
+	at net.minecraftforge.fml.config.ConfigFileTypeHandler.lambda$reader$1(ConfigFileTypeHandler.java:47) ~[fmlcore-1.20.1-47.4.0.jar%23468!/:?] {}
+

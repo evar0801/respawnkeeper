@@ -1,0 +1,17 @@
+    <FontFamily x:Key="Display">Zen Kaku Gothic New, Inter, Yu Gothic UI, Segoe UI</FontFamily>
+    <FontFamily x:Key="Body">Noto Sans JP, Inter, Yu Gothic UI, Segoe UI</FontFamily>
+    <FontFamily x:Key="Mono">JetBrains Mono, Cascadia Mono, Consolas</FontFamily>
+
+    <SolidColorBrush x:Key="Canvas"   Color="#121212"/>
+    <SolidColorBrush x:Key="Surface1" Color="#1B1B1A"/>
+    <SolidColorBrush x:Key="Surface2" Color="#232322"/>
+    <SolidColorBrush x:Key="Hairline" Color="#2E2E2C"/>
+    <SolidColorBrush x:Key="HairlineStrong" Color="#3C3C39"/>
+    <SolidColorBrush x:Key="Ink"       Color="#F2F1EE"/>
+    <SolidColorBrush x:Key="InkMuted"  Color="#B7B5B0"/>
+    <SolidColorBrush x:Key="InkSubtle" Color="#7D7B76"/>
+    <SolidColorBrush x:Key="Accent"      Color="#4F9C74"/>
+    <SolidColorBrush x:Key="AccentHover" Color="#6BB68E"/>
+    <SolidColorBrush x:Key="OnAccent"    Color="#0A0A0A"/>
+    <SolidColorBrush x:Key="Danger"      Color="#D97066"/>
+

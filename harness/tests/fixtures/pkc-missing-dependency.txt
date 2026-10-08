@@ -1,0 +1,28 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-08-01_20.50.38-fml.txt
+# covers: fml-missing-dependency / -any
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// Surprise! Haha. Well, this is awkward.
+
+Time: 2026-08-01 20:50:38
+Description: Mod loading failures have occurred; consult the issue messages for more details
+
+net.neoforged.neoforge.logging.CrashReportExtender$ModLoadingCrashException: Mod loading has failed
+
+
+-- Mod loading issue for: simpletms --
+	Failure message: Mod simpletms requires architectury 13 or above
+-- Mod loading issue for: rctapi --
+	Failure message: Mod rctapi requires architectury 13.0.2 or above
+-- Mod loading issue for: legendarymonuments --
+	Failure message: Mod legendarymonuments requires accessories 1.1.0-beta.52+1.21.1 or above
+-- Mod loading issue for: mega_showdown --
+	Failure message: Mod mega_showdown requires accessories 1.1.0-beta.52+1.21.1 or above
+	Failure message: Mod mega_showdown requires architectury 13.0.8 or above
+-- Mod loading issue for: cobblepedia --
+	Failure message: Mod cobblepedia requires patchouli any
+-- Mod loading issue for: cobblemonraiddens --
+	Failure message: Mod cobblemonraiddens requires geckolib 4.7.0 or above
+	Failure message: Mod legendarymonuments requires chipped 0 or above

@@ -1,0 +1,26 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-06-25_04.48.02-fml.txt
+# covers: dist-client-class-on-server
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// This doesn't make any sense!
+
+Time: 2026-06-25 04:48:02
+Description: Mod loading error has occurred
+
+java.lang.Exception: Mod Loading has failed
+	at net.minecraftforge.logging.CrashReportExtender.dumpModLoadingCrashReport(CrashReportExtender.java:60) ~[forge-1.20.1-47.4.0-universal.jar%23462!/:?] {re:classloading}
+
+	Mod File: /C:/Servers/fantasycraft_8/mods/ToadLib-1.3.5-1.20.1.jar
+	Failure message: ToadLib (toadlib) has failed to load correctly
+		java.lang.RuntimeException: Attempted to load class com/mr_toad/lib/api/config/ToadConfig for invalid dist DEDICATED_SERVER
+	Exception message: java.lang.RuntimeException: Attempted to load class com/mr_toad/lib/api/config/ToadConfig for invalid dist DEDICATED_SERVER
+	Caused by 0: java.lang.NoClassDefFoundError: net/tslat/smartbrainlib/api/core/navigation/SmoothGroundNavigation
+	Mod File: /C:/Servers/fantasycraft_8/mods/corundumguardian-2.2.0-forge-1.20.1.jar
+	Failure message: CorundumGuardian (corundumguardian) has failed to load correctly
+		java.lang.NoClassDefFoundError: net/tslat/smartbrainlib/api/core/navigation/SmoothGroundNavigation
+	Mod File: /C:/Servers/fantasycraft_8/mods/enhanced_boss_bars-1.20.1-1.0.0.jar
+	Failure message: Enhanced Boss Bars (enhanced_boss_bars) has failed to load correctly
+		java.lang.RuntimeException: Attempted to load class net/minecraft/client/Minecraft for invalid dist DEDICATED_SERVER
+	Exception message: java.lang.RuntimeException: Attempted to load class net/minecraft/client/Minecraft for invalid dist DEDICATED_SERVER

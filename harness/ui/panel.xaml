@@ -1,0 +1,819 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="respawnkeeper"
+        Height="660" Width="860" MinHeight="420" MinWidth="720"
+        WindowStartupLocation="CenterScreen"
+        Background="#121212"
+        TextOptions.TextFormattingMode="Ideal"
+        UseLayoutRounding="True">
+
+  <!--
+    DESIGN.md / dark theme + Forest accent.
+    Forest is the preset DESIGN.md names for Minecraft-adjacent material.
+    Hierarchy comes from the surface ladder and hairlines, never from shadow.
+      canvas #121212  surface-1 #1B1B1A  surface-2 #232322
+      hairline #2E2E2C  hairline-strong #3C3C39
+      ink #F2F1EE  ink-muted #B7B5B0  ink-subtle #7D7B76
+      accent #4F9C74  hover #6BB68E   danger #D97066
+  -->
+  <Window.Resources>
+
+    <!--THEME-->
+    <!-- Replaced at load time with theme-<name>.xaml. Colours, fonts, corner
+         radii and border weights are the ONLY things a theme may change:
+         layout lives below and is shared, because a theme that can move things
+         is a theme that has to be re-debugged. -->
+
+    <!-- ==== BELKA'S EYES ==================================================
+         The press feedback is her iris, and these three values are not picked
+         by eye - they are the hand-written ends of the ramp her iris is built
+         from, copied out of ui\stage\gen-eye.py:
+
+             ENDS['run'] = [(0x06,0x2B,0x18), (0x14,0x6B,0x36), (0x2E,0xC4,0x62),
+                            (0x8C,0xFF,0xB4), (0xE8,0xFF,0xF2)]
+
+         'run' is the green set, and gen-eye.py says why it gets the most
+         shades: "green is the state the window is in almost always". Her eye
+         changes colour with the server's state (care = amber, halt = red), so
+         there is no single eye colour in the strict sense - the press glow
+         takes the one she wears when nothing is wrong, because a red flash
+         under the finger would read as an error the press had caused.
+
+         EyeIris is the middle anchor - the body of the iris. Measured across
+         all twelve 'run' frames in stage\draw-eye, the most-painted tone is
+         #24A050 and the next two are #3BCC6D and #6DEB99, i.e. the ramp either
+         side of this anchor; the anchor is the authored value and the others
+         are interpolation, so the anchor is what is used.
+         EyeGlow is the highlight anchor, EyeInk the darkest.
+
+         The colour these replaced (#5BFF9F) was invented on 2026-09-13 and had
+         no source at all, which is the only reason replacing it costs nothing.
+
+         MEASURED, INCLUDING WHERE IT IS WEAKEST. Pressed fill against the fill
+         the button already has under the pointer (hover), by luminance:
+           eve    0.646 -> 0.409   clear      cyber  0.757 -> 0.409   clear
+           pixel  0.663 -> 0.409   clear      modern 0.385 -> 0.409   WEAK
+         modern's own accent IS a green (#4F9C74 / hover #6BB68E), so on that
+         theme the pressed PRIMARY differs from hover almost only in saturation
+         - 1.06:1, and in greyscale the two are indistinguishable. Every
+         secondary is fine everywhere (near-black surface -> 0.409). Eva's saved
+         theme is eve. Left as is rather than quietly bending the colour: the
+         colour is the thing she asked for, and a theme-local override is a
+         decision for her, recorded in DECISIONS.md.
+
+         Label on the pressed fill is 6.72:1 in every theme.
+    -->
+    <SolidColorBrush x:Key="EyeIris" Color="#2EC462"/>
+    <SolidColorBrush x:Key="EyeGlow" Color="#8CFFB4"/>
+    <SolidColorBrush x:Key="EyeInk"  Color="#062B18"/>
+
+    <!-- Secondary: the default action shape. Quiet, hairline, no fill weight. -->
+      <!-- A SWITCH, NOT THREE PRESET BUTTONS. Eva asked for this directly: the
+           sheet used to offer 無人運転 / 見張るだけ / 手動 and nothing else, so
+           "keep restarting it and keep showing Claude the unknown ones, but do
+           not let the rule table touch anything" was unreachable - it is not
+           one of the three. Three independent switches say exactly that, and
+           the name at the top of the sheet is now DERIVED from them.
+
+           Drawn rather than themed: WPF's stock CheckBox is a 13px tick that
+           reads as a form field. The states have to be legible from across a
+           desk, so the whole track changes colour, not just a glyph. Disabled
+           is 0.35 opacity AND a reason in words underneath - a switch that
+           will not move with no explanation is the thing this sheet was
+           already getting wrong. -->
+      <Style x:Key="PolicySwitch" TargetType="ToggleButton">
+        <Setter Property="Width" Value="52"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ToggleButton">
+              <Grid Background="Transparent">
+                <Border x:Name="track" CornerRadius="14"
+                        Background="{StaticResource Surface2}"
+                        BorderBrush="{StaticResource Hairline}" BorderThickness="1"/>
+                <Ellipse x:Name="knob" Width="20" Height="20"
+                         Fill="{StaticResource InkSubtle}"
+                         HorizontalAlignment="Left" Margin="4,0,0,0"/>
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                  <Setter TargetName="track" Property="Background" Value="{StaticResource Accent}"/>
+                  <Setter TargetName="track" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                  <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right"/>
+                  <Setter TargetName="knob" Property="Margin" Value="0,0,4,0"/>
+                  <Setter TargetName="knob" Property="Fill" Value="{StaticResource OnAccent}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="track" Property="BorderBrush" Value="{StaticResource AccentHover}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter TargetName="track" Property="Opacity" Value="0.35"/>
+                  <Setter TargetName="knob"  Property="Opacity" Value="0.35"/>
+                  <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+    <Style x:Key="BtnSecondary" TargetType="Button">
+      <Setter Property="FontFamily" Value="{StaticResource Body}"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Foreground" Value="{StaticResource Ink}"/>
+      <Setter Property="Background" Value="{StaticResource Surface2}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Hairline}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="14,7"/>
+      <!-- 40px is DESIGN.md's floor for a tap target. Padding alone made these
+           under 35px tall (13px type in its line box + 2x7 + borders), the
+           size of a link,
+           not a button - measured in the review of [R-091] (U16). MinHeight
+           rather than more padding, so the label stays where it was. -->
+      <Setter Property="MinHeight" Value="40"/>
+      <Setter Property="Margin" Value="0,0,8,0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" CornerRadius="{StaticResource RadBtn}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource HairlineStrong}"/>
+                <Setter TargetName="bd" Property="Background" Value="#2A2A28"/>
+              </Trigger>
+              <!-- Held down: fluorescent rim + label, for exactly as long as the
+                   press lasts. These buttons act by writing a file and report
+                   somewhere else a beat later, so this is the only feedback that
+                   lands under the finger. Colour only - changing the border
+                   thickness would shift the label a pixel on every press. -->
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="bd" Property="Background"  Value="{StaticResource EyeIris}"/>
+                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource EyeGlow}"/>
+                <Setter Property="Foreground" Value="{StaticResource EyeInk}"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource InkSubtle}"/>
+                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Hairline}"/>
+                <Setter TargetName="bd" Property="Background" Value="#191918"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Primary: exactly one per surface. Here it is only ever "start". -->
+    <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource BtnSecondary}">
+      <Setter Property="Foreground" Value="{StaticResource OnAccent}"/>
+      <Setter Property="Background" Value="{StaticResource Accent}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="bd" CornerRadius="{StaticResource RadBtn}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="1">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="bd" Property="Background" Value="{StaticResource AccentHover}"/>
+                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource AccentHover}"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="bd" Property="Background"  Value="{StaticResource EyeIris}"/>
+                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource EyeGlow}"/>
+                <Setter Property="Foreground" Value="{StaticResource EyeInk}"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource InkSubtle}"/>
+                <Setter TargetName="bd" Property="Background" Value="#191918"/>
+                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Hairline}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+
+
+    <Style x:Key="Eyebrow" TargetType="TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource Body}"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="Foreground" Value="{StaticResource InkSubtle}"/>
+    </Style>
+
+    <!-- One card per server. The whole point of this window is that two of
+         these sit side by side and answer "is it up?" without opening a file. -->
+    <DataTemplate x:Key="ServerCard">
+      <Border Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadCard}"
+              BorderBrush="{StaticResource Hairline}" BorderThickness="{StaticResource BorderW}"
+              Padding="20" Margin="0,0,0,12">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <!-- name + state -->
+          <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <!-- Rectangle, not Ellipse: the status dot is the last round thing on the
+                   screen, and a circle on a pixel grid is the one shape that gives the
+                   skin away. The corner radius is a theme value like every other. -->
+              <Rectangle Width="9" Height="9" Margin="0,0,10,0" Fill="{Binding DotBrush}"
+                         RadiusX="{StaticResource DotRad}" RadiusY="{StaticResource DotRad}"/>
+              <TextBlock Text="{Binding Label}" FontFamily="{StaticResource Display}"
+                         FontSize="20" FontWeight="Medium" Foreground="{StaticResource Ink}"
+                         Effect="{StaticResource GlowFx}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+              <TextBlock Text="{Binding Uptime}" FontFamily="{StaticResource Mono}" FontSize="13"
+                         Foreground="{StaticResource InkSubtle}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+              <Border Background="{StaticResource Surface2}" CornerRadius="{StaticResource RadPill}" Padding="9,3"
+                      BorderBrush="{Binding StateBrush}" BorderThickness="{StaticResource BorderW}">
+                <TextBlock Text="{Binding StateText}" FontFamily="{StaticResource Mono}" FontSize="12"
+                           Foreground="{Binding StateBrush}" Effect="{StaticResource GlowFx}"/>
+              </Border>
+            </StackPanel>
+          </Grid>
+
+          <!-- policy line -->
+          <TextBlock Grid.Row="1" Text="{Binding Meta}" Margin="19,8,0,0"
+                     FontFamily="{StaticResource Body}" FontSize="12"
+                     Foreground="{StaticResource InkSubtle}" TextWrapping="Wrap"/>
+
+          <!-- anything the operator needs to know right now -->
+          <ItemsControl Grid.Row="2" ItemsSource="{Binding Notices}" Margin="19,10,0,0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <!-- Grid, not a horizontal StackPanel. A horizontal StackPanel
+                     measures its children with INFINITE width, so TextWrapping
+                     never fires inside one and the wrap has to be faked with a
+                     hardcoded MaxWidth. That number was 640, tuned to an 860px
+                     window with nothing to its right - and the moment the
+                     keeper's rail took 192px, every notice ran off the edge of
+                     its card. A star column wraps at whatever room there is. -->
+                <Grid Margin="0,0,0,4">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                  </Grid.ColumnDefinitions>
+                  <Border Grid.Column="0" Width="3" CornerRadius="2" Background="{Binding Brush}" Margin="0,1,9,1"/>
+                  <TextBlock Grid.Column="1" Text="{Binding Text}" FontFamily="{StaticResource Body}"
+                             FontSize="13" Foreground="{Binding Brush}" TextWrapping="Wrap"/>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- actions -->
+          <!-- WrapPanel, not a horizontal StackPanel. The list's horizontal
+               scrollbar is Disabled, so anything a StackPanel could not fit
+               was cut off at the card's edge WITHOUT A TRACE - no scrollbar,
+               no ellipsis, just a button nobody could see ([R-091] U15). A
+               WrapPanel puts it on the next line instead. The 8px bottom margin
+               on each button HERE (not in the style: the sheets' footers
+               share the style and their buttons must stay bottom-aligned) is
+               what keeps wrapped rows apart. -->
+          <WrapPanel Grid.Row="3" Orientation="Horizontal" Margin="19,16,0,0">
+            <Button x:Name="BtnStart" Content="起動" Style="{StaticResource BtnPrimary}" Margin="0,0,8,8"
+                    Tag="{Binding}" IsEnabled="{Binding CanStart}"/>
+            <Button x:Name="BtnStop" Content="停止" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8"
+                    Tag="{Binding}" IsEnabled="{Binding CanStop}"/>
+            <Button x:Name="BtnConsole" Content="コンソール" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+            <Button x:Name="BtnDiagnose" Content="診断" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+            <Button x:Name="BtnReport" Content="{Binding ReportLabel}" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8"
+                    Tag="{Binding}" IsEnabled="{Binding HasReport}"/>
+            <Button x:Name="BtnFolder" Content="フォルダ" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+          </WrapPanel>
+
+          <!-- Maintenance. A SECOND row, not three more buttons on the first.
+               Two reasons, and either one alone would be enough: nine buttons
+               in a line runs off the edge of a card once the keeper's rail
+               takes its 192px, and these are a different kind of act - the row
+               above is done to a server you are watching, this one is done to
+               a server that is usually standing still. -->
+          <WrapPanel Grid.Row="4" Orientation="Horizontal" Margin="19,0,0,0">
+            <!-- The maintenance restart sits in THIS row, not next to stop: it
+                 is the morning lap (warn, clean stop, read the logs, start
+                 again) asked for now, and a seventh button on the row above
+                 is what runs a card off its edge. -->
+            <Button x:Name="BtnRestart" Content="メンテ再起動" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8"
+                    Tag="{Binding}" IsEnabled="{Binding CanRestart}"/>
+            <Button x:Name="BtnQuar"   Content="隔離したもの" Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+            <Button x:Name="BtnScan"   Content="点検"                         Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+            <Button x:Name="BtnPolicy" Content="方針"                         Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+            <!-- The card's title is the folder name unless profile.json says
+                 otherwise, and until now nothing could say otherwise from in
+                 here. Two of Eva's three servers are called "server", which is
+                 what a folder gets called and not what a thing gets called. -->
+            <Button x:Name="BtnName"   Content="名前"                         Style="{StaticResource BtnSecondary}" Margin="0,0,8,8" Tag="{Binding}"/>
+          </WrapPanel>
+        </Grid>
+      </Border>
+    </DataTemplate>
+  </Window.Resources>
+
+  <Grid Margin="32,28,32,24">
+    <!-- Column 1 is the keeper's rail. It is part of the SHARED layout and is
+         collapsed by every theme that does not declare KeeperOn, rather than
+         being spliced in by the themes that do: a theme that can add a column
+         is a theme that has to have its layout re-debugged, which is the one
+         thing [R-042] set out to prevent. Collapsed costs zero width, so the
+         other three themes render exactly as they did before she existed. -->
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- The city. First child of the root grid, so it renders behind every
+         other cell; RowSpan/ColumnSpan cover the whole layout and the negative
+         margin cancels the root's own 32,28,32,24 so the skyline reaches the
+         window edges instead of floating in a padded box.
+
+         IsHitTestVisible=False is not cosmetic: a Canvas laid over the whole
+         window would otherwise swallow every button click in the panel.
+
+         It is EMPTY here on purpose. Its contents are drawn from the same row
+         objects the cards use (rk-city.ps1), because a skyline authored in
+         XAML would be a picture of a city rather than a reading of one. Themes
+         that do not declare CityOn leave it collapsed and pay nothing. -->
+    <Canvas x:Name="CityLayer" Grid.Row="0" Grid.RowSpan="4"
+            Grid.Column="0" Grid.ColumnSpan="2"
+            Margin="-32,-28,-32,-24" ClipToBounds="True"
+            IsHitTestVisible="False" Visibility="Collapsed"/>
+
+    <!-- header -->
+    <Grid Grid.Row="0" x:Name="HeaderBand">
+      <!-- The tagline that used to sit under the wordmark is gone (2026-09-09,
+           Eva's call). It explained the tool to someone opening it for the
+           first time, and this window is opened by someone who already knows.
+           Deleted rather than emptied: an empty TextBlock still takes its
+           margin, and that is how a removed caption leaves a gap nobody can
+           account for later. -->
+      <StackPanel VerticalAlignment="Bottom">
+        <TextBlock Text="respawnkeeper" FontFamily="{StaticResource Display}" FontSize="28"
+                   FontWeight="Bold" Foreground="{StaticResource Ink}"
+                   Effect="{StaticResource GlowFx}"/>
+      </StackPanel>
+      <!-- Two buttons, one row. "What can this thing look after at all?" is a
+           question people ask BEFORE "add this folder", so it sits to the left
+           of it: reading order is the answer order. Neither is Primary - the
+           primary action on this screen is whatever the cards offer. -->
+      <StackPanel Orientation="Horizontal"
+                  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,0,0">
+        <Button x:Name="BtnGames" Content="対応しているサーバー" Style="{StaticResource BtnSecondary}" Margin="0,0,8,0"/>
+        <Button x:Name="BtnAdd"   Content="＋ サーバーを追加"     Style="{StaticResource BtnSecondary}" Margin="0"/>
+      </StackPanel>
+    </Grid>
+
+    <!-- account-wide notice: this is not per-server, so it lives above the list -->
+    <Border x:Name="BannerGlobal" Grid.Row="1" Margin="0,20,0,0" Padding="16,12"
+            Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadBtn}"
+            BorderBrush="#4A3A38" BorderThickness="{StaticResource BorderW}" Visibility="Collapsed">
+      <!-- Same fix as the notices, and the same reason: the banner's text used to
+           wrap at a hardcoded 600px inside a horizontal StackPanel, so it ran
+           under the button instead of stopping before it. -->
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Width="3" CornerRadius="2" Background="{StaticResource Danger}" Margin="0,0,12,0"/>
+        <TextBlock Grid.Column="1" x:Name="TxtGlobal" FontFamily="{StaticResource Body}" FontSize="13"
+                   Foreground="{StaticResource InkMuted}" TextWrapping="Wrap"
+                   VerticalAlignment="Center" Margin="0,0,16,0"/>
+        <Button Grid.Column="2" x:Name="BtnFixGlobal" Content="直す" Style="{StaticResource BtnSecondary}"
+                VerticalAlignment="Center" Margin="0"/>
+      </Grid>
+    </Border>
+
+    <!-- servers -->
+    <ScrollViewer Grid.Row="2" Margin="0,20,-6,0" VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled" Padding="0,0,10,0">
+      <ScrollViewer.Resources>
+      <!--
+        The default WPF scrollbar is a light-theme Windows control and reads as a
+        hole punched in the page. Replaced with a hairline track and a thumb that
+        only asserts itself on hover - the surface ladder does the hierarchy here,
+        same as everywhere else in DESIGN.md.
+      -->
+      <Style x:Key="ScrollThumb" TargetType="Thumb">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Thumb">
+              <Border x:Name="th" CornerRadius="{StaticResource RadBtn}" Margin="3,0" Background="{StaticResource ScrollThumbBrush}"/>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="th" Property="Background" Value="#4A4844"/>
+                </Trigger>
+                <Trigger Property="IsDragging" Value="True">
+                  <Setter TargetName="th" Property="Background" Value="#5C5A55"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+
+      <!-- No arrow buttons: they are 20 years of habit and nobody clicks them. -->
+      <Style TargetType="ScrollBar">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ScrollBar">
+              <Grid Background="Transparent">
+                <Track x:Name="PART_Track" IsDirectionReversed="True">
+                  <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
+                  </Track.DecreaseRepeatButton>
+                  <Track.Thumb>
+                    <Thumb Style="{StaticResource ScrollThumb}"/>
+                  </Track.Thumb>
+                  <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                  </Track.IncreaseRepeatButton>
+                </Track>
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      </ScrollViewer.Resources>
+      <StackPanel>
+        <ItemsControl x:Name="ListServers" ItemTemplate="{StaticResource ServerCard}"/>
+        <Border x:Name="EmptyState" Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadCard}"
+                BorderBrush="{StaticResource Hairline}" BorderThickness="{StaticResource BorderW}"
+                Padding="24" Visibility="Collapsed">
+          <StackPanel>
+            <TextBlock Text="まだ見張っているサーバーがありません"
+                       FontFamily="{StaticResource Display}" FontSize="20" FontWeight="Medium"
+                       Foreground="{StaticResource Ink}"/>
+            <TextBlock Text="右上の「＋ サーバーを追加」から、サーバーフォルダを選んでください。"
+                       FontFamily="{StaticResource Body}" FontSize="13"
+                       Foreground="{StaticResource InkSubtle}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- the keeper's bay -->
+    <!-- VerticalAlignment=Top, not stretched. The rail used to span all four rows,
+         so its height came from the card list and the picture sat centred in
+         whatever was left - which put dead space above and below it that grew
+         every time a server was added. The frame now hugs the art: the stage is
+         a fixed 148x300 at 2x, and the card the art sits in is exactly that tall
+         (2026-09-09). -->
+    <Border x:Name="KeeperRail" Grid.Column="1" Grid.Row="0" Grid.RowSpan="4"
+            Width="320" Margin="24,0,0,0" Padding="12,14,12,14" Visibility="Collapsed"
+            VerticalAlignment="Top"
+            Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadCard}"
+            BorderBrush="{StaticResource Hairline}" BorderThickness="{StaticResource BorderW}">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- No heading. It said what she is, and naming her is exactly what this
+             window does not do (2026-09-09). The row is gone with it, so the
+             picture gets the height the label was using. -->
+
+        <!-- A STAGE, not one sprite. stage\rail.json says what is in it: the bed
+             underneath, her on top. She was her own background until [R-064],
+             which meant she could not be moved or replaced without leaving a
+             hole where she had been.
+
+             Nothing here sets a size: New-RkStageVisual sets the canvas to
+             size x scale out of the manifest, so the rail's contents are
+             described in one place and this file does not have to agree with it.
+
+             ClipToBounds so art drawn larger than the rail is cropped rather
+             than pushing the cards sideways. -->
+        <Border Grid.Row="0" ClipToBounds="True" HorizontalAlignment="Center">
+          <Canvas x:Name="KeeperStage" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- Her line says what she is, which is the same thing her colour says.
+             Said twice on purpose: colour alone is not readable by everyone, and
+             this window's whole job is to be read at a glance. -->
+        <TextBlock Grid.Row="1" x:Name="KeeperLine" Margin="0,10,0,0"
+                   FontFamily="{StaticResource Body}" FontSize="12"
+                   TextWrapping="Wrap" TextAlignment="Center"
+                   Foreground="{StaticResource InkMuted}"/>
+      </Grid>
+    </Border>
+
+    <!-- footer -->
+    <Grid Grid.Row="3" Margin="0,18,0,0">
+      <Border Height="1" Background="{StaticResource Hairline}" VerticalAlignment="Top" Margin="0,0,0,0"/>
+      <TextBlock x:Name="TxtFooter" Style="{StaticResource Eyebrow}" Margin="0,14,0,0"
+                 VerticalAlignment="Center"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+        <!-- THIS BUTTON USED TO SAY "finish setup" FOREVER. Both steps behind
+             it (sign the claude CLI in, disarm the fc8 heartbeat) had been done
+             for a day when Eva said it was confusing, and it was still there,
+             still saying there was setup left. A control that names a task
+             nobody has is worse than no control.
+
+             It now names the ONE thing that is actually missing, in order:
+               not signed in  -> "connect Claude"   (opens finish-setup)
+               signed in      -> "register an API key" (opens the wallet sheet)
+             Which one is showing is decided in Apply-EnvState from a real
+             `claude auth status`, not from a flag somebody set at install. -->
+        <!-- Seeded with the CONNECT label, not the register-a-key one, because
+             $script:ClaudeReady starts $false and Apply-Panel is the only thing
+             that ever raises it. Seeding the other way meant that until the
+             first background read landed - and for ever, if it never did - the
+             button said "register an API key" and ran finish-setup. -->
+        <Button x:Name="BtnEnv" Content="Claude と連携する" Style="{StaticResource BtnSecondary}" Margin="0"/>
+      </StackPanel>
+    </Grid>
+  
+    <!-- ================= ADD A SERVER ======================================
+         The old "+" button launched respawnkeeper.bat and handed the operator a
+         black console. Everything it asked for is answerable from the folder
+         itself, so it is asked here instead: pick the folder, read back what
+         was FOUND in it, choose how much respawnkeeper should do on its own,
+         and only then write anything.
+
+         The detection result is shown before the confirm button rather than
+         after, because the one thing that can go wrong is pointing this at the
+         wrong folder, and the only person who can catch that is looking at it.
+    ================================================================== -->
+    <Grid x:Name="AddLayer" Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2"
+          Margin="-32,-28,-32,-24" Background="#E605040A" Visibility="Collapsed">
+      <Border Width="580" VerticalAlignment="Center" HorizontalAlignment="Center"
+              Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadCard}"
+              BorderBrush="{StaticResource Accent}" BorderThickness="2" Padding="22,20">
+        <StackPanel>
+          <TextBlock x:Name="TxtAddTitle" FontFamily="{StaticResource Display}" FontSize="18"
+                     FontWeight="Bold" Foreground="{StaticResource Accent}"
+                     Effect="{StaticResource GlowFx}" Margin="0,0,0,12"/>
+
+          <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="AddDetails">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Text}" Foreground="{Binding Colour}"
+                             FontFamily="{Binding FontName}" FontSize="{Binding Size}"
+                             TextWrapping="Wrap" Margin="0,0,0,4"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <TextBlock x:Name="TxtAddPolicy" Style="{StaticResource Eyebrow}" Margin="0,16,0,8"/>
+          <UniformGrid x:Name="PolicyRow" Columns="3">
+            <Button x:Name="BtnPolUnattended" Content="無人運転" Style="{StaticResource BtnSecondary}" Margin="0,0,8,0"/>
+            <Button x:Name="BtnPolWatch"      Content="見張るだけ" Style="{StaticResource BtnSecondary}" Margin="0,0,8,0"/>
+            <Button x:Name="BtnPolManual"     Content="手動"      Style="{StaticResource BtnSecondary}" Margin="0"/>
+          </UniformGrid>
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="BtnAddCancel"  Content="やめる" Style="{StaticResource BtnSecondary}"/>
+            <Button x:Name="BtnAddConfirm" Content="このフォルダを登録する" Style="{StaticResource BtnPrimary}" Margin="8,0,0,0"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- ==================================================================
+         MAINTENANCE, INSIDE THE PANEL  ([R-058])
+
+         Three things that existed only as command lines and therefore only
+         existed for whoever remembered them: what did the harness quarantine
+         and how do I put it back, read the logs now instead of at 10:00, and
+         how much is this server allowed to do by itself.
+
+         They live here rather than in the console window by the line the operator
+         drew: that window is for watching ONE server run, and these are done
+         TO a server that is usually standing still.
+
+         Same shape as the add sheet, for the same reason: what is already
+         there is read and shown FIRST, and only then is there a button that
+         writes anything.
+    ================================================================== -->
+    <Grid x:Name="MaintLayer" Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2"
+          Margin="-32,-28,-32,-24" Background="#E605040A" Visibility="Collapsed">
+      <Border Width="600" VerticalAlignment="Center" HorizontalAlignment="Center"
+              Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadCard}"
+              BorderBrush="{StaticResource Accent}" BorderThickness="2" Padding="22,20">
+        <StackPanel>
+          <TextBlock x:Name="TxtMaintTitle" FontFamily="{StaticResource Display}" FontSize="18"
+                     FontWeight="Bold" Foreground="{StaticResource Accent}"
+                     Effect="{StaticResource GlowFx}" Margin="0,0,0,4"/>
+          <!-- A long server path is wider than the sheet. Trimmed with an
+               ellipsis rather than left to run under the border, which is what
+               it did the first time and reads as a rendering fault. -->
+          <TextBlock x:Name="TxtMaintWho" Style="{StaticResource Eyebrow}" Margin="0,0,0,12"
+                     TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+
+          <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="MaintDetails">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <!-- Colour and FontName are bound as STRINGS. A SolidColorBrush
+                       built in PowerShell reaches WPF as a PSObject it cannot
+                       convert; the binding then fails SILENTLY and every line is
+                       drawn in the default black, on a black sheet. That was
+                       shipped once and caught by measuring pixels, not by
+                       looking at the picture. -->
+                  <TextBlock Text="{Binding Text}" Foreground="{Binding Colour}"
+                             FontFamily="{Binding FontName}" FontSize="{Binding Size}"
+                             TextWrapping="Wrap" Margin="0,0,0,4"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <!-- The only field in this window a person types into. Collapsed for
+               every sheet but "name", because an input box that does nothing on
+               three screens out of four is a worse offence than a missing one. -->
+          <StackPanel x:Name="NameRow" Visibility="Collapsed" Margin="0,16,0,0">
+            <TextBlock x:Name="TxtNamePick" Style="{StaticResource Eyebrow}" Margin="0,0,0,8"/>
+            <Border Background="{StaticResource Surface2}" CornerRadius="{StaticResource RadBtn}"
+                    BorderBrush="{StaticResource Hairline}" BorderThickness="{StaticResource BorderW}"
+                    Padding="10,7">
+              <TextBox x:Name="TxtNameInput" MaxLength="40"
+                       Background="Transparent" BorderThickness="0"
+                       Foreground="{StaticResource Ink}" CaretBrush="{StaticResource Accent}"
+                       SelectionBrush="{StaticResource Accent}"
+                       FontFamily="{StaticResource Display}" FontSize="16"/>
+            </Border>
+          </StackPanel>
+
+          <TextBlock x:Name="TxtMaintPick" Style="{StaticResource Eyebrow}" Margin="0,16,0,8"
+                     Visibility="Collapsed"/>
+          <StackPanel x:Name="MaintPolicyRow" Visibility="Collapsed">
+            <!-- Each row: the switch, then what it does, then what it costs.
+                 The third line is not decoration - "it restarts by itself" and
+                 "it writes to your server folder" are different promises and
+                 the sheet used to make them look like the same kind of thing. -->
+            <Grid Margin="0,0,0,12">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="64"/><ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <ToggleButton x:Name="TglRestart" Grid.Column="0" Style="{StaticResource PolicySwitch}"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"/>
+              <StackPanel Grid.Column="1">
+                <TextBlock x:Name="TxtTglRestart" FontFamily="{StaticResource Body}" FontSize="14"
+                           Foreground="{StaticResource Ink}" TextWrapping="Wrap"/>
+                <TextBlock x:Name="TxtWhyRestart" Style="{StaticResource Eyebrow}"
+                           Margin="0,3,0,0" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Grid>
+
+            <Grid Margin="0,0,0,12">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="64"/><ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <ToggleButton x:Name="TglRepair" Grid.Column="0" Style="{StaticResource PolicySwitch}"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"/>
+              <StackPanel Grid.Column="1">
+                <TextBlock x:Name="TxtTglRepair" FontFamily="{StaticResource Body}" FontSize="14"
+                           Foreground="{StaticResource Ink}" TextWrapping="Wrap"/>
+                <TextBlock x:Name="TxtWhyRepair" Style="{StaticResource Eyebrow}"
+                           Margin="0,3,0,0" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Grid>
+
+            <Grid Margin="0,0,0,4">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="64"/><ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <ToggleButton x:Name="TglEscalate" Grid.Column="0" Style="{StaticResource PolicySwitch}"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"/>
+              <StackPanel Grid.Column="1">
+                <TextBlock x:Name="TxtTglEscalate" FontFamily="{StaticResource Body}" FontSize="14"
+                           Foreground="{StaticResource Ink}" TextWrapping="Wrap"/>
+                <TextBlock x:Name="TxtWhyEscalate" Style="{StaticResource Eyebrow}"
+                           Margin="0,3,0,0" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Grid>
+
+            <!-- Why a switch will not move. Next to it, not after the fact. -->
+            <TextBlock x:Name="TxtPolicyLock" FontFamily="{StaticResource Body}" FontSize="12"
+                       Foreground="{StaticResource Amber}" Margin="0,6,0,0"
+                       TextWrapping="Wrap" Visibility="Collapsed"/>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="BtnMaintClose"  Content="閉じる" Style="{StaticResource BtnSecondary}"/>
+            <Button x:Name="BtnMaintAction" Style="{StaticResource BtnPrimary}" Margin="8,0,0,0"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- ================= THE FLEET SHEET ==================================
+         MaintLayer answers questions about ONE server and is keyed to a
+         ServerDir. These two screens are about the account and the harness as a
+         whole - which games exist at all, and who pays for the model - so they
+         get their own layer rather than a null ServerDir threaded through the
+         per-server path. Same shell, deliberately: a second visual language for
+         a sheet would be a new thing to learn for no new meaning.
+
+           'games'  what harness\games\*.psd1 can look after, and how far each
+                    one has been proven. Every number is recomputed on open.
+           'model'  subscription or API key ([R-020]), for every registered
+                    server at once.
+    ================================================================== -->
+    <Grid x:Name="FleetLayer" Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2"
+          Margin="-32,-28,-32,-24" Background="#E605040A" Visibility="Collapsed">
+      <Border Width="660" VerticalAlignment="Center" HorizontalAlignment="Center"
+              Background="{StaticResource Surface1}" CornerRadius="{StaticResource RadCard}"
+              BorderBrush="{StaticResource Accent}" BorderThickness="2" Padding="22,20">
+        <StackPanel>
+          <TextBlock x:Name="TxtFleetTitle" FontFamily="{StaticResource Display}" FontSize="18"
+                     FontWeight="Bold" Foreground="{StaticResource Accent}"
+                     Effect="{StaticResource GlowFx}" Margin="0,0,0,4"/>
+          <TextBlock x:Name="TxtFleetWho" Style="{StaticResource Eyebrow}" Margin="0,0,0,12"
+                     TextWrapping="Wrap"/>
+
+          <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="FleetDetails">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <!-- Colour and FontName as STRINGS, for the same reason as
+                       MaintDetails: a SolidColorBrush built in PowerShell
+                       arrives as a PSObject WPF cannot convert, the binding
+                       fails silently, and every line draws black on black. -->
+                  <TextBlock Text="{Binding Text}" Foreground="{Binding Colour}"
+                             FontFamily="{Binding FontName}" FontSize="{Binding Size}"
+                             TextWrapping="Wrap" Margin="0,0,0,4"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <!-- Collapsed on the games screen. -->
+          <StackPanel x:Name="WalletRow" Visibility="Collapsed" Margin="0,16,0,0">
+            <TextBlock x:Name="TxtWalletPick" Style="{StaticResource Eyebrow}" Margin="0,0,0,8"/>
+            <UniformGrid Columns="2">
+              <Button x:Name="BtnWalletSub" Style="{StaticResource BtnSecondary}" Margin="0,0,8,0"/>
+              <Button x:Name="BtnWalletApi" Style="{StaticResource BtnSecondary}" Margin="0"/>
+            </UniformGrid>
+
+            <!-- !! THE NAME OF A VARIABLE, NEVER THE KEY. Entering a credential
+                 is Eva's own action in her own shell; nothing in this window may
+                 accept one. The box is 64 characters and the value is validated
+                 against ^[A-Za-z_][A-Za-z0-9_]*$ before it can be written, which
+                 rejects a pasted key on its punctuation alone. -->
+            <StackPanel x:Name="ApiEnvRow" Visibility="Collapsed" Margin="0,14,0,0">
+              <TextBlock x:Name="TxtApiEnvPick" Style="{StaticResource Eyebrow}" Margin="0,0,0,8"/>
+              <Border Background="{StaticResource Surface2}" CornerRadius="{StaticResource RadBtn}"
+                      BorderBrush="{StaticResource Hairline}" BorderThickness="{StaticResource BorderW}"
+                      Padding="10,7">
+                <TextBox x:Name="TxtApiEnvInput" MaxLength="64"
+                         Background="Transparent" BorderThickness="0"
+                         Foreground="{StaticResource Ink}" CaretBrush="{StaticResource Accent}"
+                         SelectionBrush="{StaticResource Accent}"
+                         FontFamily="{StaticResource Display}" FontSize="15"/>
+              </Border>
+              <TextBlock x:Name="TxtApiEnvState" Style="{StaticResource Eyebrow}"
+                         Margin="0,8,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="BtnFleetClose"  Content="閉じる" Style="{StaticResource BtnSecondary}"/>
+            <Button x:Name="BtnFleetAction" Style="{StaticResource BtnPrimary}" Margin="8,0,0,0"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+</Grid>
+</Window>

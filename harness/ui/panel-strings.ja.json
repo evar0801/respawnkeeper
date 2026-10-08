@@ -1,0 +1,328 @@
+{
+  "_comment": "Japanese shown by rk-panel.ps1. It lives here and not in the .ps1 because PS 5.1 decodes a BOM-less .ps1 as ANSI, and one Japanese character in a script file breaks the parser. Same reason as rules/logscan-report.ja.json.",
+  "state": {
+    "running": "稼働中",
+    "stopped": "停止",
+    "halted": "停止 (HALT)",
+    "external": "外から停止",
+    "unknown": "不明",
+    "never": "未起動"
+  },
+  "meta": {
+    "policyUnattended": "無人運転",
+    "policyWatch": "見張るだけ",
+    "policyManual": "手動",
+    "dailyOn": "毎朝 {0} に点検",
+    "dailyOff": "日次点検なし",
+    "mods": "mod {0}",
+    "modsGraph": "mod {0}（葉 {1}）",
+    "loader": "{0} / Java {1}",
+    "noProfile": "未設定",
+    "separator": "  ・  ",
+    "policyCustom": "自分で組んだ設定"
+  },
+  "notice": {
+    "halted": "落ちたまま止まっています。診断を読んで、直してから起動してください。",
+    "modelNotReady": "モデル段が使えません（{0}）。表引き診断・修復・再起動・日次点検は動きます。",
+    "legacyWatchdog": "古い watchdog がまだ armed です。respawnkeeper はこのサーバーでは起動を拒否します。",
+    "newReport": "今日の点検報告があります。",
+    "comeback": "復帰の宿題が {0} 件あります（隔離した mod の戻し方）。",
+    "stoppedByUser": "あなたが止めました。自動では起こしません。",
+    "verifyStop": "このゲームは停止手順が未検証のため、自動再起動と日次点検は切ってあります。",
+    "unsupervised": "respawnkeeper の外で動いています（run.bat などから起動）。このパネルからは止められません。停止はその窓で。"
+  },
+  "button": {
+    "report": "今日の報告",
+    "noReport": "報告なし",
+    "console": "コンソール",
+    "start": "起動",
+    "stop": "停止",
+    "diagnose": "診断",
+    "folder": "フォルダ",
+    "restart": "メンテ再起動"
+  },
+  "global": {
+    "signedOut": "claude CLI がサインアウトしています。モデル段（落ちた1回目に Opus が解析する部分）だけが使えません。"
+  },
+  "footer": {
+    "loading": "サーバーを読み込んでいます...",
+    "updated": "最終更新 {0}",
+    "counted": "{0} 台を見張り中 · 最終更新 {1}",
+    "scanning": "サーバーを探しています...",
+    "stale": "更新できていません（{0}）· 表示は {1} 秒前のまま",
+    "timedOut": "読み取りが返ってきません",
+    "noResult": "読み取りが結果を返しませんでした",
+    "link": "Claude と連携する",
+    "model": "APIキーを登録"
+  },
+  "sample": {
+    "signedOutShort": "claude CLI がサインアウト",
+    "labelA": "pokemoncraft",
+    "labelB": "fantasycraft_8",
+    "labelC": "valheim-test",
+    "labelD": "everheim（停止処理中の例）"
+  },
+  "theme": {
+    "next": "見た目：{0} へ",
+    "names": {
+      "modern": "モダン",
+      "pixel": "ドット",
+      "cyber": "サイバー",
+      "eve": "ドット絵サイバー"
+    }
+  },
+  "keeper": {
+    "title": "見張り番",
+    "run": "問題なく動いてる。今日は出番なさそう。",
+    "care": "あとで {0} 件だけ見てほしいの。急ぎじゃない。",
+    "halt": "落ちたまま。診断は出してあるから、読んで。",
+    "sleep": "ぜんぶ止まってる。だいじょうぶ、故障じゃない。",
+    "none": "見張る相手がいないみたい。"
+  },
+  "console": {
+    "loading": "読み込んでいます...",
+    "readFailed": "読み取りに失敗しました（{0}）",
+    "subtitle": "{0}  ・  ログ {1} 行  ・  このウィンドウを閉じてもサーバーは止まりません",
+    "noStdin": "コマンドを送れません。respawnkeeper 経由で起動されたサーバーだけが、司令塔の握っている stdin にコマンドを流せます（読むだけなら今のままで大丈夫です）。",
+    "pending": "未送信のコマンドが {0} 件たまっています。司令塔が受け取っていない可能性があります。",
+    "noBat": "このサーバーにはまだ respawnkeeper の環境が作られていません。パネルの「セットアップの続き」から作ってください。",
+    "logUnavailable": "読めるログが見つかりません。このゲームのログの場所が分からないか、まだ1行も書かれていません。ここが空なのは、サーバーが静かだからではありません。",
+    "logLegacy": "※ ログの場所は旧来の logs\\latest.log で代用しています（Get-RkLogFile がまだ読み込まれていません）。",
+    "panelOpen": "サーバー一覧の画面はすでに開いています (pid {0}) が、前面に出せませんでした。\nタスクバーの respawnkeeper を探してください。",
+    "panelMissing": "入口のスクリプトが見つかりません:\n{0}",
+    "windowOpen": "このサーバーのコンソールはすでに開いています (pid {0}) が、前面に出せませんでした。\nタスクバーの respawnkeeper を探してください。"
+  },
+  "tablet": {
+    "_comment": "The keeper hands over a tablet; these are the screens written on it. [R-055]. Her name is deliberately absent from every value here - the window never tells you what she is called [R-063].",
+    "title": {
+      "players": "オンラインの人",
+      "vitals": "サーバーの調子",
+      "report": "今日の点検報告",
+      "diag": "診断と、復帰の宿題",
+      "command": "コマンドとチャット",
+      "remove": "respawnkeeper を取り外す",
+      "attend": "ねぎらう"
+    },
+    "players": {
+      "loading": "履歴を読み込んでいます...",
+      "none": "いま誰もいません。",
+      "count": "{0} 人が遊んでいます",
+      "how": "ログの入退室から数えています。サーバーには何も聞いていません。"
+    },
+    "vitals": {
+      "none": "調子を読めませんでした。",
+      "uptime": "稼働 {0} 時間 {1} 分",
+      "mem": "メモリ {0} MB",
+      "lagNone": "直近 {0}KB のログに、処理落ちの記録はありません。",
+      "lag": "処理落ち {0} 回（直近 {1}KB のログ）",
+      "worst": "いちばん重かったとき {0} 秒（{1} ティック遅れ）",
+      "crash": "クラッシュ {0} 回  ・  自動修復 {1} 回"
+    },
+    "unavail": {
+      "_comment": "The third state, added 2026-09-12 [R-071]/[R-072]: not 'fine' and not 'broken' but 'never measured'. Before these strings existed, a roster that could not read a log rendered as an empty roster and a lag scan that read zero bytes rendered as 'no lag recorded'. 'why' carries the sentence from lib\\rk-capabilities.psd1 verbatim (English on purpose - it is the contract's own wording, and one source beats two translations drifting apart).",
+      "head": "このゲームでは取得できません。",
+      "players": "入退室の見分け方が、このゲームでは分かっていません。",
+      "noLog": "読めるログがありません。",
+      "unknownGame": "このフォルダがどのゲームのサーバーなのか分かりませんでした。",
+      "lag": "処理落ちは測っていません（読めるログがありませんでした）。",
+      "lagEmpty": "ログはありますが、まだ1行も書かれていません。処理落ちは測っていません。",
+      "lagEvidence": "このゲームでは、処理落ちがログにどう出るのかがまだ分かっていません。ログは読めていますが、処理落ちは測っていません。",
+      "lagUnreadable": "ログを読めませんでした。処理落ちは測っていません。",
+      "why": "理由: {0}",
+      "legacy": "※ ログの場所は旧来の logs\\latest.log で代用しています（Get-RkLogFile がまだ読み込まれていません）。"
+    },
+    "report": {
+      "none": "今日の報告はまだありません。"
+    },
+    "diag": {
+      "noCrash": "落ちた記録はありません。",
+      "noState": "まだ respawnkeeper が見張った記録がありません。",
+      "lastCrash": "最後に落ちたのは {0}",
+      "verdict": "診断: {0}",
+      "noComeback": "戻し忘れている mod はありません。",
+      "comeback": "復帰の宿題が {0} 件あります"
+    },
+    "command": {
+      "hint": "ここに打つと、司令塔がサーバーへ流します。",
+      "chatHint": "say ではじめると、ゲームの中のみんなに話しかけられます。",
+      "send": "送る"
+    },
+    "remove": {
+      "running": "サーバーが動いています。止めてからでないと取り外せません。",
+      "what": "次のものを隔離フォルダへ移します:",
+      "safe": "ワールド・mods・config には触れません。",
+      "where": "移す先は support の delate_files フォルダです（消さずに残します）。",
+      "confirm": "取り外す",
+      "done": "{0} 件を隔離しました。"
+    },
+    "attend": {
+      "hint": "見張り番、おつかれさま。",
+      "note": "※ 反応の絵はまだありません（描いたらここが動きます）",
+      "coffee": "コーヒーを持っていく",
+      "thanks": "……ありがと。まだ起きてるよ。"
+    }
+  },
+  "add": {
+    "_comment": "The in-panel add-a-server flow. [R-055].",
+    "pick": "respawnkeeper に見張らせたいサーバーのフォルダを選んでください",
+    "title": "このフォルダを見張らせますか",
+    "already": "このサーバーはもう登録されています。設定を作り直すことになります。",
+    "found": "見つけました: {0}",
+    "unknown": "ここがどのゲームのサーバーなのか分かりませんでした。",
+    "unknownHow": "respawnkeeper.bat から実行すると、フォルダの中身をモデルに読ませて雛形を作れます。",
+    "stopUnverified": "このゲームは、きれいな停止をまだ一度も見ていません。自動再起動と日次点検は切った状態で登録します。",
+    "mods": "mod {0} 個",
+    "writes": "次のものをこのフォルダに作ります:",
+    "writesNot": "ワールド・mods・config には何も書きません。",
+    "policy": "どこまで自分でやらせますか",
+    "working": "作っています…",
+    "done": "できました。{0} 個のファイルを確認しました。",
+    "doneNext": "起動はあなたの手番です。カードの「起動」から。",
+    "failed": "作れませんでした（終了コード {0}）。",
+    "failedHow": "respawnkeeper.bat から実行すると、途中経過が読めます。",
+    "noSetup": "rk-setup.ps1 が見つかりません: {0}",
+    "close": "閉じる"
+  },
+  "maint": {
+    "_comment": "The three maintenance sheets on the panel: quarantine / inspect / policy. These are the operations that had no button anywhere and could only be reached from a command line. [R-058].",
+    "title": {
+      "quar": "隔離したもの",
+      "scan": "点検",
+      "policy": "このサーバーの方針",
+      "name": "このサーバーの呼び名"
+    },
+    "quar": {
+      "empty": "隔離したものはありません。",
+      "count": "{0} 件が隔離されています。",
+      "head": "--- {0}",
+      "action": "  したこと: {0}",
+      "reason": "  理由: {0}",
+      "file": "  戻す先: {0}",
+      "undone": "  （これはもう戻してあります）",
+      "running": "サーバーが動いています。戻すのは止めてからです。",
+      "where": "隔離の実体は respawnkeeper\\quarantine の中にあります。消してはいません。",
+      "restore": "いちばん新しいものを戻す",
+      "working": "戻しています…",
+      "done": "{0} 件のファイルを元の場所へ戻しました。",
+      "doneNext": "次に起動したときから、これがまた読まれます。",
+      "failed": "戻せませんでした（終了コード {0}）。",
+      "nothing": "戻せるものがありません（全部すでに戻っています）。"
+    },
+    "scan": {
+      "what": "ログを読んで、静かに溜まっている問題を報告書にします。",
+      "safe": "読むだけです。サーバーは止めませんし、何も直しません。",
+      "lastDaily": "最後の点検報告: {0}",
+      "lastComeback": "復帰の宿題: {0} 件",
+      "none": "まだ点検報告がありません。",
+      "run": "いま点検する",
+      "working": "読んでいます…",
+      "done": "報告書ができました: {0}",
+      "doneNext": "カードの「今日の報告」から開けます。",
+      "failed": "点検できませんでした（終了コード {0}）。"
+    },
+    "policy": {
+      "now": "いまの方針: {0}",
+      "autoRestart": "落ちたら respawnkeeper が起こし直す: {0}",
+      "autoRepair": "表にある原因なら respawnkeeper が直す: {0}",
+      "escalate": "表にない原因は Claude に見せる: {0}",
+      "daily": "毎日きめた時刻に点検する: {0}",
+      "yes": "する",
+      "no": "しない",
+      "pick": "どれをやらせますか（1つずつ切り替えられます）",
+      "verifyStop": "このゲームはきれいな停止をまだ見ていないので、自動で起こす設定は入りません。",
+      "writes": "書き換えるのは respawnkeeper\\profile.json の4〜5行だけです（無人運転を選ぶとモデルに渡す先も書きます）。元のファイルは .bak に残します。",
+      "apply": "この方針にする",
+      "applied": "方針を {0} にしました。",
+      "same": "すでにその方針です。",
+      "failed": "書き換えられませんでした: {0}",
+      "noProfile": "profile.json がありません。先にセットアップしてください。",
+      "tglRestart": "落ちたら起こし直す",
+      "tglRepair": "表にある原因を直す",
+      "tglEscalate": "表にない原因を Claude に見せる",
+      "on": "オン",
+      "off": "オフ",
+      "lockStop": "このゲームはきれいな停止をまだ見ていません。起こし直すのも直すのも入れられません。",
+      "lockHook": "エスカレーション用のフックが見つかりません。",
+      "vetoed": "入れられなかったものがあります: {0}",
+      "whyRestart": "落ちたと判断したら、そのまま起動し直します。3回続けて落ちたら止まって待ちます。",
+      "whyRepair": "クラッシュの原因が表にあり、機械的に戻せるときだけ直します。止まっている間だけ書き込みます。",
+      "whyEscalate": "表で分からない原因を Claude に渡します。落ちた1回目から渡します。"
+    },
+    "name": {
+      "pick": "この画面での呼び名",
+      "now": "いまの呼び名: {0}",
+      "folder": "フォルダ名: {0}",
+      "writes": "書き換えるのは respawnkeeper\\profile.json の serverLabel 1行だけです（元のファイルは .bak に残ります）。実際のフォルダ名は変わりません。",
+      "reopen": "コンソール窓の見出しは、次にその窓を開き直したときに変わります。",
+      "apply": "この呼び名にする",
+      "applied": "呼び名を {0} にしました。",
+      "same": "すでにその呼び名です。",
+      "empty": "呼び名を入れてください。",
+      "bad": "改行やタブは呼び名に入れられません。",
+      "failed": "書き換えられませんでした: {0}",
+      "rolledBack": "（元のファイルを .bak から戻しました）",
+      "noProfile": "profile.json がありません。先にセットアップしてください。"
+    },
+    "close": "閉じる"
+  },
+  "busy": {
+    "_comment": "What the state badge says while the supervisor is mid-act. Read off state.json (STOPPING / MAINT_PENDING / ANALYZING / RESTARTING) and off the flag files; only shown while a supervisor is alive.",
+    "stopRequested": "停止を依頼済み",
+    "restartRequested": "メンテ再起動を依頼済み",
+    "stopping": "保存して停止中…",
+    "maintPending": "点検の予告中（まもなく停止）",
+    "analyzing": "点検中（いったん停止）",
+    "restarting": "再起動中…",
+    "diagnosing": "診断中（停止中）"
+  },
+  "signal": {
+    "_comment": "Replies to the stop / restart buttons. The buttons write STOP_SERVER / MAINTENANCE_NOW; the supervisor is the only reader.",
+    "nobody": "respawnkeeper がこのサーバーを見張っていないので、依頼を受け取る相手がいません。\n{0}\n\n起動は「起動」（rk-start.bat）から。",
+    "failed": "依頼を書けませんでした。\n{0}",
+    "sentStop": "停止を頼んだ。保存が終わったら落ちる。起こし直しはしない。",
+    "sentRestart": "メンテ再起動を頼んだ。予告 → 保存して停止 → 点検 → 起動。"
+  },
+  "fleet": {
+    "_comment": "パネル上部の「対応しているサーバー」と、足元の環境ボタンが開くシート。サーバー1台の話ではなく、この機械ぜんぶの話をする場所。",
+    "close": "閉じる",
+    "games": {
+      "title": "対応しているサーバー",
+      "sub": "harness\\games\\*.psd1 から読んでいます。手で書いた一覧ではないので、テンプレートを直せばここも変わります。",
+      "loading": "数え直しています…",
+      "levelFull": "実運転で確認済み",
+      "levelPartial": "置き場所だけ確認",
+      "levelNone": "未確認",
+      "levelBroken": "テンプレートが読めません",
+      "counts": "できること {0} ／ 証拠待ち {1} ／ このゲームには無い {2}",
+      "countsUnknown": "できることの数は数えられませんでした",
+      "inUse": "このPC: {0}",
+      "notInUse": "このPCではまだ使っていません",
+      "legend": "「証拠待ち」は、仕組みは揃っているのに実際に動かして確かめていないもの。1回動かして確かめれば開きます。「未確認」のゲームは、respawnkeeper のほうから何もしません。",
+      "none": "テンプレートが1つも見つかりませんでした。",
+      "usersUnknown": "このPCでの使用状況はまだ読み込み中です"
+    },
+    "model": {
+      "title": "モデルの環境",
+      "sub": "落ちた1回目に Opus が解析する段の支払い先です。登録しているサーバー全部にまとめて書きます。",
+      "cliMissing": "claude CLI がこのPCに見つかりません。連携してからやり直してください。",
+      "cliIn": "claude CLI: サインイン済み",
+      "cliOut": "claude CLI: サインアウト",
+      "nowSub": "いま: サブスク（いまの契約で払う。追加の課金なし）",
+      "nowApi": "いま: 従量課金（{0}）",
+      "mixed": "サーバーごとに設定が違います。適用すると全部そろえます。",
+      "pick": "どちらで払いますか",
+      "optSub": "サブスク",
+      "optApi": "従量課金（APIキー）",
+      "envPick": "キーを入れている環境変数の「名前」",
+      "envSet": "{0} は設定されています。値は読みも保存もしません。",
+      "envUnset": "{0} はまだ設定されていません。設定するまでモデル段は止まります（黙って別の財布に回すことはしません）。",
+      "keyWarn": "ここに入れるのは変数の名前だけです。キーそのものは絶対に入れないでください。キーの設定はエヴァ本人の作業です。自分の窓でこう打ってください:  setx {0} \"（キー）\"",
+      "apply": "この設定にする",
+      "applied": "{0} 台に書きました。",
+      "failed": "書けませんでした: {0}",
+      "nothing": "登録しているサーバーがまだありません。",
+      "envBadName": "それは環境変数の「名前」ではありません。名前だけを入れてください（キーそのものは絶対に入れないでください）。",
+      "noProfile": "このサーバーの設定ファイルが見つかりません（フォルダが動いた可能性）"
+    }
+  }
+}

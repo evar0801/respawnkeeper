@@ -1,0 +1,16 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-07-02_18.50.40-server.txt
+# covers: ticking-entity-npe
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// I let you down. Sorry :(
+
+Time: 2026-07-02 18:50:40
+Description: Ticking entity
+
+java.lang.NoClassDefFoundError: com/example/shauradungeon/directive/TrainingProgress
+	at com.example.shauradungeon.event.TrainingProgressDetector.onLivingHurt(TrainingProgressDetector.java:76) ~[shauradungeon-1.20.1-1.1.0.jar%23479!/:1.1.0] {re:classloading}
+
+	Entity Type: tacz:bullet (com.tacz.guns.entity.EntityKineticBullet)
+	Entity's Block location: World: (-46,66,31), Section: (at 2,2,15 in -3,4,1; chunk contains blocks -48,-64,16 to -33,319,31), Region: (-1,0; contains chunks -32,0 to -1,31, blocks -512,-64,0 to -1,319,511)

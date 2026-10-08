@@ -1,0 +1,68 @@
+{
+  "_comment": [
+    "THE PANEL'S RAIL, as a stage. Same schema and same renderer as stage.json - the",
+    "console's room - so there is one way to describe a picture in this project and not two.",
+    "",
+    "WHY IT IS A STAGE NOW. The rail used to be ONE sprite: a single .rkspr drawn straight",
+    "into an <Image>. That made the character her own background, which has two costs.",
+    "(1) Whatever is behind her has to be baked into her, so she cannot be moved or swapped",
+    "without a hole appearing where she used to be. (2) Every new pose has to redraw the",
+    "backdrop too. Splitting them means the bed is drawn once, she sits on top of it, and",
+    "moving her is a change to 'at' - nothing else. [R-064]",
+    "",
+    "WHAT CARRIES THE STATE. Her eyes cannot: at 120x200 her iris is two or three pixels",
+    "and the 24-colour reduction does not even keep a green for it (measured). So the",
+    "NEON SIGN over the bed is the readout - 1,245 pixels of it - and the pose timings that",
+    "used to live in panel-model.ps1 as KeeperLoops now live here as 'hold':",
+    "",
+    "    run    slow pulse   - a light breathing every few seconds reads as 'fine'",
+    "    care   even pulse   - something is waiting",
+    "    halt   fast blink   - a fault indicator, which is this pose's whole job",
+    "    sleep  held, lit    - nothing is running, so nothing MOVES",
+    "",
+    "SLEEP USED TO HOLD THE DIM FRAME ('nothing is running, so nothing is lit') and that was",
+    "the thing Eva actually complained about: the sign looked like the colour had drained out of",
+    "the picture rather than like a state. It is also unreadable now that the sign carries words -",
+    "at 43% alpha the text sits at 1.69:1 against its own slab, so the one sentence in the room",
+    "faded out in the exact state it names. Held and LIT: 5.04:1, and 'held' still separates it",
+    "from run's slow pulse and halt's 1:1 blink, which is what carried the meaning anyway.",
+    "",
+    "She is one static frame. That is honest rather than lazy: there is only one drawing of",
+    "her in this pose, and a second frame that changed nothing would be a lie about it.",
+    "Adding a pose means dropping a file in art\\ and naming it here.",
+    "",
+    "Built by build-belka.ps1, which remembers the substitutions (X -> * is the sign,",
+    "T -> + its halo). Re-importing loses them; re-running that script puts them back."
+  ],
+
+  "schema": "respawnkeeper/stage/1",
+  "size": [296, 600],
+  "scale": 1,
+
+  "layers": [
+    {
+      "_note": "the bed, from above, nobody on it. The sign over the headboard is the status light.",
+      "id": "rail-bg",
+      "source": "art/rail-bg.rkspr",
+      "at": [0, 0],
+      "tint": "state",
+      "byState": { "run": "run", "care": "care", "halt": "halt", "sleep": "sleep" },
+      "anim": {
+        "idle":  { "frames": ["lit.0"] },
+        "run":   { "frames": ["lit.0", "lit.1"], "hold": [7, 1] },
+        "care":  { "frames": ["lit.0", "lit.1"], "hold": [3, 3] },
+        "halt":  { "frames": ["lit.0", "lit.1"], "hold": [1, 1] },
+        "sleep": { "frames": ["lit.0"],          "hold": [8] }
+      }
+    },
+    {
+      "_note": "her, lying on it. 260x434 centred in 296x600. The rail is the same 320px wide on screen as before - what changed is that this stage draws at 1x instead of 2x, so the same strip holds four times the pixels. Measured reason: at 130x217 both irises together were ELEVEN pixels. Her iris is the state colour here too, mapped by rectangle - and note it is NOT green any more: median cut allocates by area, forty pixels of iris lose, and the entry they land in is a blue-grey the hair also uses. The rectangle is what makes marking it safe.",
+      "id": "belka-rail",
+      "source": "art/belka-rail.rkspr",
+      "at": [148, 300],
+      "anchor": "center",
+      "tint": "state",
+      "anim": { "idle": { "frames": ["idle.0"] } }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-06-21_07.16.49-server.txt
+# covers: missing-class-own-mod
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// Who set us up the TNT?
+
+Time: 2026-06-21 07:16:49
+Description: Exception in server tick loop
+
+java.lang.NoClassDefFoundError: com/example/shauradungeon/interaction/ShauranChatSystem
+	at com.example.shauradungeon.interaction.ShauranInteractionHandler.handleInteraction(ShauranInteractionHandler.java:50) ~[shauradungeon-1.20.1-1.1.0.jar%23347!/:1.1.0] {re:classloading}
+

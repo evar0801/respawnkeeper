@@ -1,0 +1,79 @@
+<!--
+  theme-pixel.xaml - the dot / pixel theme.
+
+  WHY IT SUITS THIS PROGRAM. Minecraft is a 16x16-texture game, and this window
+  spends its life reporting on Minecraft servers. A pixel skin is not decoration
+  here, it is the subject matter.
+
+  WHAT MAKES IT READ AS PIXELS - three things, none of them an image:
+
+  1. NO ROUNDING. Every radius is 0. A rounded rectangle cannot be drawn on a
+     coarse grid, so any curve immediately breaks the illusion.
+  2. HEAVY, EVEN BORDERS. 2px everywhere. Old UI toolkits drew a literal 1-2
+     pixel frame around every box; hairlines read as "vector".
+  3. ALIASED TEXT. Set by the loader, not here (it is a Window-level option):
+     TextRenderingMode=Aliased kills subpixel smoothing, so glyph edges land on
+     whole pixels. This is what actually sells it - shape alone is not enough.
+
+  FONTS. MS Gothic is the pixel font every Japanese Windows already has: it
+  keeps a bitmap-derived, perfectly square-gridded shape at UI sizes, and it
+  covers kana and kanji - which a western pixel font would not. No download,
+  and nothing to install on a friend's machine either.
+
+  COLOURS. Still DESIGN.md's dark ground and Forest accent, pushed a little
+  harder: a pixel palette wants fewer, more separated steps, because the eye
+  reads flat blocks rather than gradients. The greens are the same family so
+  the two themes are recognisably one product.
+
+  This file is not valid XAML on its own - it is spliced into panel.xaml where
+  the THEME marker is.
+-->
+
+<sys:Boolean x:Key="AliasedText">True</sys:Boolean>
+<sys:Boolean x:Key="KeeperOn">False</sys:Boolean>
+
+<FontFamily x:Key="Display">MS Gothic, MS UI Gothic, Consolas</FontFamily>
+<FontFamily x:Key="Body">MS Gothic, MS UI Gothic, Consolas</FontFamily>
+<FontFamily x:Key="Mono">MS Gothic, Consolas</FontFamily>
+
+<!-- Ground: a touch bluer and flatter than the modern theme, the way a CRT
+     black reads. Surfaces step in clear jumps so blocks separate without
+     needing a shadow. -->
+<SolidColorBrush x:Key="Canvas"   Color="#0E0F0E"/>
+<SolidColorBrush x:Key="Surface1" Color="#1A1C19"/>
+<SolidColorBrush x:Key="Surface2" Color="#262A24"/>
+<SolidColorBrush x:Key="Hairline" Color="#3A3F36"/>
+<SolidColorBrush x:Key="HairlineStrong" Color="#586052"/>
+<SolidColorBrush x:Key="Ink"       Color="#E8E6DC"/>
+<SolidColorBrush x:Key="InkMuted"  Color="#A8A99B"/>
+<!-- LogInk: the server log. Deliberately NOT Accent - Accent means "running"
+     and nothing decorative may wear it - but cyan-leaning, because the log is
+     read against a near-black ground and InkMuted disappeared into it. -->
+<SolidColorBrush x:Key="LogInk"    Color="#8FC9D6"/>
+<SolidColorBrush x:Key="InkSubtle" Color="#7A7C6E"/>
+<!-- Brighter and more saturated than Forest's #4F9C74: flat blocks lose
+     apparent chroma, so a pixel palette has to overshoot to land in the same
+     place. Same hue family, so it is still the same product. -->
+<SolidColorBrush x:Key="Accent"      Color="#5FD38A"/>
+<SolidColorBrush x:Key="AccentHover" Color="#8CE8AC"/>
+<SolidColorBrush x:Key="OnAccent"    Color="#0E0F0E"/>
+<SolidColorBrush x:Key="Danger"      Color="#E8705C"/>
+<SolidColorBrush x:Key="ScrollThumbBrush" Color="#4A5044"/>
+
+<!-- Amber carries "still works, but you are needed later". It lives in the
+     theme because it MEANS something: a skin that restyles everything but
+     leaves the meaning-bearing colours behind is only half a theme. -->
+<SolidColorBrush x:Key="Amber" Color="#D8B437"/>
+<!-- KeeperIdle: 停止中の看板。ドット絵側の色域に合わせた薄紫。
+     Danger(#E8705C) とも Accent(#5FD38A) とも別の色相。 -->
+<SolidColorBrush x:Key="KeeperIdle" Color="#A98BD0"/>
+
+<!-- Themes that do not glow declare a no-op effect, so the layout can carry
+     one hook instead of one branch per theme. -->
+<DropShadowEffect x:Key="GlowFx" BlurRadius="0" ShadowDepth="0" Opacity="0"/>
+
+<CornerRadius x:Key="RadCard">0</CornerRadius>
+<CornerRadius x:Key="RadBtn">0</CornerRadius>
+<CornerRadius x:Key="RadPill">0</CornerRadius>
+<sys:Double x:Key="DotRad">0</sys:Double>
+<Thickness x:Key="BorderW">2</Thickness>

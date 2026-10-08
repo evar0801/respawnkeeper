@@ -1,0 +1,69 @@
+<!--
+  theme-modern.xaml - DESIGN.md dark theme + Forest accent.
+
+  This is the file that used to live inline in panel.xaml. Forest is the preset
+  DESIGN.md names for Minecraft-adjacent material. Hierarchy comes from the
+  surface ladder and hairlines, never from shadow.
+
+  A theme may set colours, fonts, corner radii and border weights. It may NOT
+  move anything: layout is shared so a layout bug is only ever fixed once.
+
+  This file is not valid XAML on its own - it is spliced into panel.xaml where
+  the THEME marker is.
+-->
+
+<sys:Boolean x:Key="AliasedText">False</sys:Boolean>
+<sys:Boolean x:Key="KeeperOn">False</sys:Boolean>
+
+<FontFamily x:Key="Display">Zen Kaku Gothic New, Inter, Yu Gothic UI, Segoe UI</FontFamily>
+<FontFamily x:Key="Body">Noto Sans JP, Inter, Yu Gothic UI, Segoe UI</FontFamily>
+<FontFamily x:Key="Mono">JetBrains Mono, Cascadia Mono, Consolas</FontFamily>
+
+<SolidColorBrush x:Key="Canvas"   Color="#121212"/>
+<SolidColorBrush x:Key="Surface1" Color="#1B1B1A"/>
+<SolidColorBrush x:Key="Surface2" Color="#232322"/>
+<SolidColorBrush x:Key="Hairline" Color="#2E2E2C"/>
+<SolidColorBrush x:Key="HairlineStrong" Color="#3C3C39"/>
+<SolidColorBrush x:Key="Ink"       Color="#F2F1EE"/>
+<SolidColorBrush x:Key="InkMuted"  Color="#B7B5B0"/>
+<!-- LogInk: the server log. Deliberately NOT Accent - Accent means "running"
+     and nothing decorative may wear it - but cyan-leaning, because the log is
+     read against a near-black ground and InkMuted disappeared into it. -->
+<SolidColorBrush x:Key="LogInk"    Color="#8FC2CE"/>
+<SolidColorBrush x:Key="InkSubtle" Color="#7D7B76"/>
+<SolidColorBrush x:Key="Accent"      Color="#4F9C74"/>
+<SolidColorBrush x:Key="AccentHover" Color="#6BB68E"/>
+<SolidColorBrush x:Key="OnAccent"    Color="#0A0A0A"/>
+<SolidColorBrush x:Key="Danger"      Color="#D97066"/>
+<SolidColorBrush x:Key="ScrollThumbBrush" Color="#33322F"/>
+
+<!-- Amber carries "still works, but you are needed later". It lives in the
+     theme because it MEANS something: a skin that restyles everything but
+     leaves the meaning-bearing colours behind is only half a theme. -->
+<SolidColorBrush x:Key="Amber" Color="#C9A227"/>
+<!-- KeeperIdle: 停止中の看板と、その下の一行。既定のネオン紫はこのテーマの落ち着いた
+     色域から浮くので、彩度を落とした藤色にしてある。Danger(#D97066) とも Accent(#4F9C74) とも
+     別の色相。
+     最初 #9B6FA8 にしたが、Surface1(#1B1B1A) に対して 4.30:1 で AA(4.5:1) を割っていた
+     （このテーマは KeeperOn=False なので今は描かれず、誰も気づかないまま出荷される値だった）。
+     #A87ABA で 5.05:1。 -->
+<!-- KeeperIdle: the sign while nothing runs. modern is DESIGN.md's own palette
+     and DESIGN.md says "no second accent hue" - so this is NOT the neon purple
+     the eve/cyber skins use ([R-091] U17). It is the Forest accent with the
+     saturation taken out: same hue family as Accent, readable on Canvas
+     (#121212) at 7.35:1 (6.76:1 on Surface1). It is only 1.30:1 from Accent
+     itself, so "off" and "on" are told apart by the sign holding still versus
+     pulsing (rail.json), not by this colour alone - which is the trade
+     DESIGN.md's one-hue rule asks for. modern never draws the rail anyway
+     (KeeperOn=False); the console's room is where this shows. -->
+<SolidColorBrush x:Key="KeeperIdle" Color="#8FA89A"/>
+
+<!-- Themes that do not glow declare a no-op effect, so the layout can carry
+     one hook instead of one branch per theme. -->
+<DropShadowEffect x:Key="GlowFx" BlurRadius="0" ShadowDepth="0" Opacity="0"/>
+
+<CornerRadius x:Key="RadCard">12</CornerRadius>
+<CornerRadius x:Key="RadBtn">8</CornerRadius>
+<CornerRadius x:Key="RadPill">999</CornerRadius>
+<sys:Double x:Key="DotRad">4.5</sys:Double>
+<Thickness x:Key="BorderW">1</Thickness>

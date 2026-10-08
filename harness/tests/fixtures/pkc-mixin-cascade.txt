@@ -1,0 +1,27 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-08-01_21.08.30-fml.txt
+# covers: fml-mixin-apply-failed / fml-init-cascade
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// My bad.
+
+Time: 2026-08-01 21:08:30
+Description: Mod loading failures have occurred; consult the issue messages for more details
+
+net.neoforged.neoforge.logging.CrashReportExtender$ModLoadingCrashException: Mod loading has failed
+
+
+-- Mod loading issue for: railways --
+	Caused by 0: java.lang.NoClassDefFoundError: Could not initialize class com.simibubi.create.AllBlocks
+	Failure message: Create: Steam 'n' Rails 1.21.1 (railways) has failed to load correctly
+		java.lang.NoClassDefFoundError: Could not initialize class com.simibubi.create.AllBlocks
+	Failure message: Mixin application of com.kipti.bnb.mixin.dyeable.pipes.FluidPipeBlockMixin from Create Bits 'n' Bobs (bits_n_bobs) has failed
+-- Mod loading issue for: createrailwaysnavigator --
+	Failure message: Create Railways Navigator (createrailwaysnavigator) has failed to load correctly
+-- Mod loading issue for: bits_n_bobs --
+	Failure message: Create Bits 'n' Bobs (bits_n_bobs) has failed to load correctly
+-- Mod loading issue for: aeronautics --
+	Failure message: Create Aeronautics (aeronautics) has failed to load correctly
+-- Mod loading issue for: rechiseledcreate --
+	Failure message: Rechiseled: Create (rechiseledcreate) has failed to load correctly

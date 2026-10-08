@@ -1,0 +1,92 @@
+<!--
+  theme-cyber.xaml - neon on a dead screen.
+
+  WHAT MAKES IT READ AS CYBERPUNK. Four things, none of them an image file:
+
+  1. TWO NEONS ON NEAR-BLACK. Cyan for "alive", magenta for "broken". The genre
+     is built on a cold ground with two hot lights on it; a third hue dilutes it
+     immediately, so amber is the ONLY other colour and it earns its place by
+     carrying a distinct meaning.
+  2. SCANLINES. Canvas is a tiled DrawingBrush, not a colour: a 1px darker band
+     every 3px, which is what a CRT looks like at arm's length. Subtle on
+     purpose - visible enough to feel, faint enough to read text over.
+  3. GLOW. DropShadowEffect with ShadowDepth 0 and the accent's own colour, so
+     text bleeds light instead of casting a shadow. This is the one thing the
+     other themes cannot do, which is why the layout carries a GlowFx hook.
+  4. HAIRLINES THAT ARE CYAN, NOT GREY. Borders tinted toward the accent read as
+     emitted light rather than as printed rules.
+
+  FONTS. Cascadia Mono is the terminal cut that ships with Windows Terminal and
+  VS on this machine, with Consolas behind it; Yu Gothic UI catches the kana and
+  kanji that neither covers. No download, nothing to install for a friend.
+
+  WHAT IT DELIBERATELY DOES NOT DO. No animation, no flicker, no chromatic
+  aberration. This window gets opened to answer "is the server up" - a readout
+  that fights the reader is a costume, not a design.
+
+  This file is not valid XAML on its own - it is spliced into panel.xaml where
+  the THEME marker is.
+-->
+
+<sys:Boolean x:Key="AliasedText">False</sys:Boolean>
+<sys:Boolean x:Key="KeeperOn">False</sys:Boolean>
+
+<FontFamily x:Key="Display">Cascadia Mono, Consolas, Yu Gothic UI</FontFamily>
+<FontFamily x:Key="Body">Yu Gothic UI, Cascadia Mono, Segoe UI</FontFamily>
+<FontFamily x:Key="Mono">Cascadia Mono, Consolas</FontFamily>
+
+<!-- The ground is a tiled scanline pattern rather than a flat colour. The
+     loader assigns this to Window.Background, and render-preview paints it
+     behind the visual tree, so both see the same screen. -->
+<DrawingBrush x:Key="Canvas" TileMode="Tile" Viewport="0,0,3,3"
+              ViewportUnits="Absolute" Stretch="None">
+  <DrawingBrush.Drawing>
+    <DrawingGroup>
+      <GeometryDrawing Brush="#060910">
+        <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,3,3"/></GeometryDrawing.Geometry>
+      </GeometryDrawing>
+      <GeometryDrawing Brush="#040609">
+        <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,3,1"/></GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingGroup>
+  </DrawingBrush.Drawing>
+</DrawingBrush>
+
+<SolidColorBrush x:Key="Surface1" Color="#0A1220"/>
+<SolidColorBrush x:Key="Surface2" Color="#122032"/>
+<!-- Borders lean cyan so they read as emitted light, not printed rules. -->
+<SolidColorBrush x:Key="Hairline"       Color="#173A52"/>
+<SolidColorBrush x:Key="HairlineStrong" Color="#2A6F94"/>
+
+<SolidColorBrush x:Key="Ink"       Color="#DCF6FF"/>
+<SolidColorBrush x:Key="InkMuted"  Color="#8FB8CC"/>
+<!-- LogInk: the server log. Deliberately NOT Accent - Accent means "running"
+     and nothing decorative may wear it - but cyan-leaning, because the log is
+     read against a near-black ground and InkMuted disappeared into it. -->
+<SolidColorBrush x:Key="LogInk"    Color="#7FD8EE"/>
+<SolidColorBrush x:Key="InkSubtle" Color="#54798C"/>
+
+<SolidColorBrush x:Key="Accent"      Color="#22E6FF"/>
+<SolidColorBrush x:Key="AccentHover" Color="#7BF3FF"/>
+<SolidColorBrush x:Key="OnAccent"    Color="#00131C"/>
+<!-- Magenta, not red: on a cyan ground the complementary hue is what actually
+     jumps, and "down" has to jump. -->
+<SolidColorBrush x:Key="Danger"      Color="#FF3D7F"/>
+<SolidColorBrush x:Key="Amber"       Color="#FFC24A"/>
+<!-- KeeperIdle: 停止中の看板。eve と同じネオン紫（Accent=シアン / Danger=ピンクの
+     どちらとも別の色相）。 -->
+<SolidColorBrush x:Key="KeeperIdle"  Color="#C93FD6"/>
+<SolidColorBrush x:Key="ScrollThumbBrush" Color="#1E4A63"/>
+
+<!-- ShadowDepth 0 turns a drop shadow into a bloom: the glyph bleeds its own
+     colour outward instead of casting anything. BlurRadius stays small - a wide
+     glow on body text destroys legibility, and this window is read, not admired. -->
+<DropShadowEffect x:Key="GlowFx" Color="#22E6FF" BlurRadius="12" ShadowDepth="0" Opacity="0.55"/>
+
+<!-- Slightly clipped corners rather than round: a bevel reads as machined
+     panel, a radius reads as a consumer app. -->
+<CornerRadius x:Key="RadCard">2</CornerRadius>
+<CornerRadius x:Key="RadBtn">2</CornerRadius>
+<CornerRadius x:Key="RadPill">2</CornerRadius>
+<sys:Double x:Key="DotRad">0</sys:Double>
+<Thickness x:Key="BorderW">1</Thickness>

@@ -1,0 +1,14 @@
+# FIXTURE - trimmed excerpt of a REAL crash report, for tests\Invoke-SelfTest.ps1.
+# source: crash-2026-06-27_20.59.44-server.txt
+# covers: server-hang-watchdog
+# Local user paths and UUIDs are scrubbed; nothing else is edited.
+# ---------------------------------------------------------------
+---- Minecraft Crash Report ----
+// Don't do that.
+
+Time: 2026-06-27 20:59:44
+Description: Watching Server
+
+java.lang.Error: ServerHangWatchdog detected that a single server tick took 180.00 seconds (should be max 0.05)
+	at com.sun.jna.Native.invokeInt(Native Method) ~[jna-5.12.1.jar%2391!/:5.12.1 (b0)] {}
+

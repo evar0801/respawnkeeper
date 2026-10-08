@@ -1,0 +1,92 @@
+<!--
+  theme-eve.xaml - the dot-matrix cyber skin, and the only one with someone in it.
+
+  WHAT IT IS. theme-pixel proved the grid (no radii, 2px frames, aliased glyphs)
+  and theme-cyber proved the light (two neons on near-black, scanlines, bloom).
+  Neither on its own is what was asked for: a console that looks like a 98-era
+  repair terminal in a city that never gets daylight. This is both at once, and
+  it is the theme that turns the keeper on.
+
+  WHY THE TWO EXISTING THEMES WERE NOT JUST EDITED. pixel and cyber are each
+  internally consistent and each already reviewed; merging into either would
+  have destroyed a skin to make a skin. Adding a file costs one file, and the
+  cycle picks it up on its own.
+
+  THE GRID RULES CARRY OVER UNCHANGED - radii 0, borders 2, AliasedText True.
+  A neon glow on a smoothed glyph reads as a photograph of a screen; on an
+  aliased one it reads as the screen.
+
+  FONT. MS Gothic, as in theme-pixel: it is the one font on every Japanese
+  Windows that keeps a square bitmap grid at UI sizes AND covers kana and kanji.
+  Cascadia would look more "cyber" in latin and would break the moment the
+  window says anything in Japanese, which it does on every single line.
+
+  KeeperOn is what makes the right-hand rail appear. She is drawn in the state
+  colour, so she is only honest in a palette where the state colours are the
+  loudest thing on screen - which is exactly what this one is.
+
+  This file is not valid XAML on its own - it is spliced into panel.xaml where
+  the THEME marker is.
+-->
+
+<sys:Boolean x:Key="AliasedText">True</sys:Boolean>
+<sys:Boolean x:Key="KeeperOn">True</sys:Boolean>
+<!-- CityOn turns the skyline on behind everything. It belongs to this theme
+     alone for the same reason the keeper does: the towers are painted in the
+     state colours, so they are only honest in a palette where those colours
+     are the loudest thing on screen. -->
+<sys:Boolean x:Key="CityOn">True</sys:Boolean>
+
+<FontFamily x:Key="Display">MS Gothic, MS UI Gothic, Consolas</FontFamily>
+<FontFamily x:Key="Body">MS Gothic, MS UI Gothic, Consolas</FontFamily>
+<FontFamily x:Key="Mono">MS Gothic, Consolas</FontFamily>
+
+<!-- Scanlines on a 4px pitch rather than cyber's 3px: the grid here is coarser
+     everywhere else too, and a band that does not line up with the blocks reads
+     as interference instead of as a screen. -->
+<DrawingBrush x:Key="Canvas" TileMode="Tile" Viewport="0,0,4,4"
+              ViewportUnits="Absolute" Stretch="None">
+  <DrawingBrush.Drawing>
+    <DrawingGroup>
+      <GeometryDrawing Brush="#080C14">
+        <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,4,4"/></GeometryDrawing.Geometry>
+      </GeometryDrawing>
+      <GeometryDrawing Brush="#05080E">
+        <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,4,1"/></GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingGroup>
+  </DrawingBrush.Drawing>
+</DrawingBrush>
+
+<SolidColorBrush x:Key="Surface1" Color="#0B0814"/>
+<SolidColorBrush x:Key="Surface2" Color="#1D172A"/>
+<SolidColorBrush x:Key="Hairline"       Color="#2A2140"/>
+<SolidColorBrush x:Key="HairlineStrong" Color="#504462"/>
+
+<SolidColorBrush x:Key="Ink"       Color="#EAE6F2"/>
+<SolidColorBrush x:Key="InkMuted"  Color="#A79BC0"/>
+<!-- LogInk: the server log. Deliberately NOT Accent - Accent means "running"
+     and nothing decorative may wear it - but cyan-leaning, because the log is
+     read against a near-black ground and InkMuted disappeared into it. -->
+<SolidColorBrush x:Key="LogInk"    Color="#79D4DD"/>
+<SolidColorBrush x:Key="InkSubtle" Color="#6E6289"/>
+
+<SolidColorBrush x:Key="Accent"      Color="#2BE9F2"/>
+<SolidColorBrush x:Key="AccentHover" Color="#84F5FA"/>
+<SolidColorBrush x:Key="OnAccent"    Color="#04121A"/>
+<SolidColorBrush x:Key="Danger"      Color="#FF3D7F"/>
+<SolidColorBrush x:Key="Amber"       Color="#FFC24A"/>
+<!-- KeeperIdle: 何も動いていないときの鉄道の看板。InkMuted（文字色・彩度19%）で
+     塗っていたので、消灯ではなく「絵から色が抜けた」ように見えていた。
+     看板が実際に描かれている magenta（#BD23B5）を、点いて見える明るさまで上げた値。
+     Danger(#FF3D7F) とは色相が46度離れており、あちらは速く点滅・こちらは点きっぱなし。 -->
+<SolidColorBrush x:Key="KeeperIdle"  Color="#C93FD6"/>
+<SolidColorBrush x:Key="ScrollThumbBrush" Color="#3A2F58"/>
+
+<DropShadowEffect x:Key="GlowFx" Color="#2BE9F2" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+
+<CornerRadius x:Key="RadCard">0</CornerRadius>
+<CornerRadius x:Key="RadBtn">0</CornerRadius>
+<CornerRadius x:Key="RadPill">0</CornerRadius>
+<sys:Double x:Key="DotRad">0</sys:Double>
+<Thickness x:Key="BorderW">2</Thickness>
