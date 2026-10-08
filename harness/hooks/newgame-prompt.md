@@ -46,7 +46,7 @@ respawnkeeper 用のテンプレート `.psd1` を **`{{OUT_FILE}}` に1個だ�
    ログファイルが無いなら `capture.stdout = $true` にする（respawnkeeper が自分でコンソールを記録する）。
 4. **起動スクリプトにパスワードが書かれていることがある。** その場合は引数を再構成せず、
    **同梱の起動スクリプトをそのまま呼ぶ**（`launch.kind = 'script'`）。
-   respawnkeeper が資格情報に触れないдля済む。
+   respawnkeeper が資格情報に触れないで済む。
 
 ## 禁止事項（違反するくらいなら「特定できなかった」と書いて終わる）
 

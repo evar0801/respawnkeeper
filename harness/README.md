@@ -2,24 +2,33 @@
 
 **サーバーが落ちたら、1回目で原因を特定し、直せるものだけ直して、起こし直す。直せないものは止まって人を待つ。**
 
-対象サーバーは **`-ServerDir` で指す**。パスもバージョンもこのフォルダ内に一切埋め込まれていない。
+対象サーバーは **`-ServerDir` で指す**。サーバーの場所もバージョンも、このフォルダの中には書いていない。
+
+例外が3か所あり、リポジトリの親フォルダを基準にした並びを前提にしている。
+
+- `ui\rk-console.ps1` のアンインストールは、respawnkeeper が置いたファイルを、親フォルダの下の `support\delate_files\` へ退避する。
+- `rk-finish-setup.ps1` の最後の確認は、リポジトリの隣の `pokemoncraft\server` を探す。無ければ警告を出して先へ進む。
+- `launcher\build-exe.ps1 -Verify` も同じ場所を探す。無ければ、通しの確認だけを飛ばす。
 
 **Minecraft 専用ではない。** ゲームごとの違いは `games/<id>.psd1` にデータとして出してある。
 
 | テンプレート | 検証状況 |
 |---|---|
 | `minecraft`（Forge / NeoForge） | ✅ **完全検証**（配置・起動・停止すべて実行済み） |
-| `palworld` `valheim` `terraria` `tmodloader` | ⚠ **配置のみ実フォルダで検証。起動・停止は未実行** |
+| `valheim` | ✅ 配置・起動・停止を実サーバーで実行済み（2026-09-13。正本は `games\valheim.psd1` の `verified`） |
+| `palworld` `terraria` `tmodloader` | ⚠ **配置のみ実フォルダで検証。起動・停止は未実行** |
 | `corekeeper` | 🚧 ドラフト（サーバー未インストールのため実物なし） |
 | それ以外 | `rk-newgame.ps1` がその場で生成 → **実フォルダで検証してから採用** |
 
 ⚠ **`verified.stop` が false のゲームでは、自動再起動と日次点検が自動でOFFになる。**
 人が1回クリーン停止を見届けて `games/<id>.psd1` の `verified.stop = $true` にするのが解除条件。
-**Valheim が一番危ない**（強制終了はワールドを保存しない）。
+**強制終了がワールドを保存しない Valheim が一番危なかった**（2026-09-13 にクリーン停止を見届けて解除済み）。
 
 ---
 
 ## 使い始め — `respawnkeeper.exe` をダブルクリック
+
+> `respawnkeeper.exe` は git に入れていない（ビルド生成物）。先に `launcher\build-exe.ps1` で作るか、同じ入口の `respawnkeeper.bat` を使う。
 
 リポジトリ直下の **`respawnkeeper.exe`** を**ダブルクリック**（または**サーバーフォルダをドラッグ&ドロップ**）すると、
 専用ウィンドウが開いて、そのフォルダ用の環境を作る:
@@ -118,7 +127,7 @@ powershell -File harness\respawnkeeper.ps1 -ServerDir "<サーバーdir>" -Check
 
 | ファイル | 役割 | 単独で実行できるか |
 |---|---|---|
-| `..\respawnkeeper.exe` | **ダブルクリックの入口。** 引数なし＝**コントロールパネル**／フォルダを渡す＝ウィザード。ロジックは持たない [R-038] | ○ |
+| `..\respawnkeeper.exe` | **ダブルクリックの入口。** 引数なし＝**コントロールパネル**／フォルダを渡す＝ウィザード。ロジックは持たない [R-038]。git には入れていない（`launcher\build-exe.ps1` が作る） | ○ |
 | `..\panel.bat` ／ `..\respawnkeeper.bat` | 同じ入口の退路（exe が SmartScreen 等で動かないとき） | ○ |
 | `ui\rk-panel.ps1` | **コントロールパネル本体**。全サーバーの状態＋起動/停止/診断/報告。**読むだけ** [R-039] | ○ |
 | `ui\panel-model.ps1` | パネルが知っていること（窓なし）。プレビューと共用 | — |
@@ -139,7 +148,7 @@ powershell -File harness\respawnkeeper.ps1 -ServerDir "<サーバーdir>" -Check
 | `hooks/escalate-claude.ps1` + `escalate-prompt.md` | 2/3段目（Opus）。`unattended` のときだけ走る | 司令塔が呼ぶ |
 | `lib/rk-common.ps1` | 共通関数（ローダー解決・生存判定・ロック・JSON） | — |
 | `lib/rk-modgraph.ps1` | **除去の拒否権**。逆依存グラフと配布リストを読む | — |
-| `tests/Invoke-SelfTest.ps1` | **自己テスト107件**。実 java を落として復旧まで通す | ○ |
+| `tests/Invoke-SelfTest.ps1` | **自己テスト**。実 java を落として復旧まで通す（件数は実行結果の最終行に出る） | ○ |
 
 **状態ファイルはサーバーの隣**（`<ServerDir>\respawnkeeper\`）に出る。ハーネスの隣ではない
 （fc8 と pokemoncraft のログが混ざって `STATUS.txt` が無意味になるため。[R-003]）。
@@ -297,6 +306,7 @@ powershell -File harness\tests\Invoke-SelfTest.ps1
 実サーバーには触らない（最後の2件だけ `-CheckOnly` 相当の読み取り確認）。
 手で止めたときに再起動しないこと・`profile.json` が効くことも同じ治具で確かめている。
 **2026-08-27 実測: PASS 107 / FAIL 0 / SKIP 0**（ゲーム検出・日次点検・除去ゲート・秘密の伏せ字を含む）。
+その後に試験を足したので、今の件数は実行結果の最終行（`PASS n   FAIL n   SKIP n`）で見る。
 
 ---
 

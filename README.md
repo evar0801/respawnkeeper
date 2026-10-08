@@ -74,6 +74,7 @@ powershell -File harness\tests\Invoke-SelfTest.ps1
 ```
 
 `respawnkeeper.exe` は同梱していない。`harness\launcher\build-exe.ps1` で作るか、`respawnkeeper.bat` を使う。
+作った exe にはアイコン（絵のライセンスの対象）が埋め込まれる。配るときの扱いは [LICENSE-ART.md](LICENSE-ART.md)。
 設定に使う環境変数は [.env.example](.env.example)。
 
 ## 検証の状況
